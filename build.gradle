@@ -1,0 +1,54 @@
+subprojects {
+	apply plugin: 'eclipse'
+	group = 'com.marklogic'
+	repositories {
+		mavenCentral()
+  	maven {url "https://developer.marklogic.com/maven2/"}
+	}
+
+	apply plugin: 'maven-publish'
+
+	ext {
+		pubVersion = project.hasProperty("pubVersion") ? project.getProperty("pubVersion") : "0.1." + java.util.Calendar.getInstance().getTimeInMillis()
+	}
+
+	publishing {
+		publications {
+      mavenJava(MavenPublication) {
+      	groupId 'com.marklogic'
+	      artifactId getProject().getName()
+	      version pubVersion
+				from components.java
+      }
+      repositories {
+				maven {
+		      if (project.hasProperty("nexusPublish")) {
+		        url "file:///usr/local/sonatype-work/nexus/storage/snapshots"
+		      }
+		      else {
+		        url mavenLocal().url
+		      }
+				}
+    	}
+    }
+	}
+}
+
+project(":ml-java") {
+	apply plugin: 'java'
+}
+
+project(":ml-junit") {
+	apply plugin: 'java'
+	dependencies {
+	  compile project(":ml-java")
+	}
+}
+
+project(":ml-gradle") {
+	apply plugin: 'groovy'
+	dependencies {
+	  compile project(":ml-java")
+	  testCompile project(":ml-junit")
+	}
+}

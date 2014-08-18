@@ -1,0 +1,29 @@
+<package-database xmlns="http://marklogic.com/manage/package/databases">
+  <config>
+    <package-database-properties>
+      <word-positions>true</word-positions>
+      <collection-lexicon>true</collection-lexicon>
+      <range-element-indexes>
+        <range-element-index>
+          <scalar-type>dateTime</scalar-type>
+          <collation />
+          <namespace-uri>http://marklogic.com/test</namespace-uri>
+          <localname>testDateTime</localname>
+          <range-value-positions>false</range-value-positions>
+          <invalid-values>reject</invalid-values>
+        </range-element-index>
+      </range-element-indexes>
+      <geospatial-element-indexes>
+        <geospatial-element-index>
+          <namespace-uri>http://marklogic.com/test</namespace-uri>
+          <localname>testRegion</localname>
+          <coordinate-system>wgs84</coordinate-system>
+          <point-format>point</point-format>
+          <range-value-positions>false</range-value-positions>
+          <invalid-values>reject</invalid-values>
+        </geospatial-element-index>
+      </geospatial-element-indexes>
+    </package-database-properties>
+  </config>
+</package-database>
+

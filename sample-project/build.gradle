@@ -1,0 +1,98 @@
+/**
+ * The buildscript block lets us tell Gradle about our dependency on ml-gradle and where to find its dependencies.
+ */
+buildscript {
+  repositories {
+    mavenCentral()
+    maven {url "https://developer.marklogic.com/maven2/"}
+    maven {url "http://rjrudin.github.io/gradle-sandbox/snapshots"}
+    mavenLocal()
+  }
+  
+  dependencies {
+    classpath group:"com.marklogic", name:"ml-gradle", version:"0.2"
+  }
+}
+
+
+/*
+ * This is a typical set of plugins for a Java project - support for Eclipse project files, the default Java 
+ * support provided by Gradle, and the ml-gradle plugin.
+ */
+apply plugin: 'eclipse'
+apply plugin: 'java'
+apply plugin: 'ml-gradle'
+
+
+/*
+ * This lists the repositories for finding project dependencies (which differ from buildscript dependencies - buildscript
+ * dependencies are not included in project artifacts that are built).
+ */
+repositories {
+  mavenCentral()
+  maven {url "http://rjrudin.github.io/gradle-sandbox/snapshots"}
+  maven {url "https://developer.marklogic.com/maven2/"}
+  mavenLocal()
+}
+
+
+/*
+ * This expresses dependencies on the ml-java and ml-junit libraries. The former is used for the "watch" task below, and
+ * possibly for application code, and the latter supports writing JUnit-based tests. 
+ */
+dependencies {
+  compile group:"com.marklogic", name:"ml-java", version:"0.2"
+  testCompile group:"com.marklogic", name:"ml-junit", version:"0.2"
+}
+
+
+/*
+ * The ext block in Gradle is where project properties can be added. Each property that has an "ml" prefix is one that 
+ * the ml-gradle plugin has initialized already.
+ * 
+ * mlAppConfig is used for defining the host/port/username/password of the application that will be installed and 
+ * configured. mlManageConfig is used for defining the host/port/username/password of the REST Management API that will
+ * be used for installing the application. Both default to "localhost" for the host. mlAppConfig defaults to ports 8100
+ * and 8101 for REST/XDBC servers. mlManageConfig defaults to port 8002 for the Management API. Both will use mlUsername
+ * and mlPassword if those properties are defined, which we do below. 
+ */
+ext {
+  mlUsername = "admin"
+  mlPassword = "admin"
+  
+  mlAppConfig {
+    name = "sample-project"
+  }
+  
+  /*
+   * Since we'll be constructing our database and server packages by merging multiple package files together, we need
+   * to tell the ManageConfig property where to find out merged package files. 
+   */
+  mlManageConfig {
+    contentDatabaseFilePath = "build/merged-content-database.xml"
+    httpServerFilePath = "build/merged-http-server.xml"
+  }
+}
+
+/*
+ * This is an example of how the database and server packages are created by merging one or more package files into a
+ * default database/server package file. Multiple packages could exist in a scenario where a project depends on another
+ * project that needs to contribute its own set of, e.g., range indexes or other configuration settings.
+ *
+ * This is also a basic example of how tasks registered by the ml-gradle plugin can be customized. We could add 
+ * additional behavior to each via the doFirst and doLast blocks that exist for each task. 
+ */
+mlMergeDatabasePackages.mergePackageFilePaths = ["src/main/xqy/packages/content-database1.xml", "src/main/xqy/packages/content-database2.xml"]
+mlMergeHttpServerPackages.mergePackageFilePaths = ["src/main/xqy/packages/http-server.xml"]
+
+
+/*
+ * This watch task runs a Java program that checks for new/modified modules in the given directory, and when such
+ * modules are found, they're automatically installed into the REST API server.
+ */
+task watch (type: JavaExec, dependsOn: 'classes') {
+  main = 'com.marklogic.client.configurer.ml7.ConfigurationFilesWatcher'
+  classpath = sourceSets.main.runtimeClasspath
+  args 'src/main/xqy', mlAppConfig.host, mlAppConfig.restPort, mlUsername, mlPassword
+}
+
