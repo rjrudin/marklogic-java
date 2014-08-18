@@ -10,7 +10,7 @@ buildscript {
   }
   
   dependencies {
-    classpath group:"com.marklogic", name:"ml-gradle", version:"0.2"
+    classpath "com.marklogic:ml-gradle:0.2"
   }
 }
 
@@ -41,8 +41,8 @@ repositories {
  * possibly for application code, and the latter supports writing JUnit-based tests. 
  */
 dependencies {
-  compile group:"com.marklogic", name:"ml-java", version:"0.2"
-  testCompile group:"com.marklogic", name:"ml-junit", version:"0.2"
+  compile "com.marklogic:ml-java:0.2"
+  testCompile "com.marklogic:ml-junit:0.2"
 }
 
 
