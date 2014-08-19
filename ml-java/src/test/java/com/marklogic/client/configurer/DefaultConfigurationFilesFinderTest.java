@@ -14,8 +14,7 @@ public class DefaultConfigurationFilesFinderTest extends Assert {
 
     @Test
     public void baseDirWithExtensionsOfEachKind() throws IOException {
-        File baseDir = new ClassPathResource("sample-base-dir").getFile();
-        ConfigurationFiles files = sut.findConfigurationFiles(baseDir);
+        ConfigurationFiles files = sut.findConfigurationFiles(getBaseDir("sample-base-dir"));
         assertEquals(1, files.getOptions().size());
         assertEquals("Only *.xqy files should be included", 1, files.getServices().size());
         assertEquals("Only *.xsl files should be included", 1, files.getTransforms().size());
@@ -28,11 +27,30 @@ public class DefaultConfigurationFilesFinderTest extends Assert {
 
     @Test
     public void emptyBaseDir() throws IOException {
-        File baseDir = new ClassPathResource("empty-base-dir").getFile();
-        ConfigurationFiles files = sut.findConfigurationFiles(baseDir);
+        ConfigurationFiles files = sut.findConfigurationFiles(getBaseDir("empty-base-dir"));
         assertEquals(0, files.getAssets().size());
         assertEquals(0, files.getOptions().size());
         assertEquals(0, files.getServices().size());
         assertEquals(0, files.getTransforms().size());
+    }
+
+    @Test
+    public void versionControlFilesInAssetsDirectory() {
+        ConfigurationFiles files = sut.findConfigurationFiles(getBaseDir("base-dir-with-version-control-files"));
+
+        List<Asset> assets = files.getAssets();
+        assertEquals(
+                "The directory and file starting with . should have been ignored, as those are considered to be version control files",
+                1, assets.size());
+        assertEquals("Confirming that the only asset found was the xquery module", "sample.xqy", assets.get(0)
+                .getFile().getName());
+    }
+
+    private File getBaseDir(String path) {
+        try {
+            return new ClassPathResource(path).getFile();
+        } catch (IOException e) {
+            throw new RuntimeException(path);
+        }
     }
 }

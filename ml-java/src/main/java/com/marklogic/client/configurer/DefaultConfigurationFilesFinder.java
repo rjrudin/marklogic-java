@@ -1,10 +1,13 @@
 package com.marklogic.client.configurer;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultConfigurationFilesFinder implements ConfigurationFilesFinder {
+
+    private FilenameFilter assetFilenameFilter = new AssetFilenameFilter();
 
     @Override
     public ConfigurationFiles findConfigurationFiles(File baseDir) {
@@ -36,9 +39,9 @@ public class DefaultConfigurationFilesFinder implements ConfigurationFilesFinder
         files.setAssets(assets);
     }
 
-    private void addAssetFiles(File dir, String pathRelativeToAssetsDir, List<Asset> assets) {
+    protected void addAssetFiles(File dir, String pathRelativeToAssetsDir, List<Asset> assets) {
         if (dir.exists()) {
-            for (File f : dir.listFiles()) {
+            for (File f : dir.listFiles(getAssetFilenameFilter())) {
                 String name = f.getName();
                 if (f.isDirectory()) {
                     addAssetFiles(f, pathRelativeToAssetsDir + "/" + name, assets);
@@ -47,6 +50,15 @@ public class DefaultConfigurationFilesFinder implements ConfigurationFilesFinder
                 }
             }
         }
+    }
+
+    /**
+     * Can be overridden via subclass to provide custom behavior.
+     * 
+     * @return
+     */
+    protected FilenameFilter getAssetFilenameFilter() {
+        return assetFilenameFilter;
     }
 
     protected void addOptions(ConfigurationFiles files, File baseDir) {
@@ -61,7 +73,7 @@ public class DefaultConfigurationFilesFinder implements ConfigurationFilesFinder
         }
         files.setOptions(queryOptions);
     }
-    
+
     protected void addTransforms(ConfigurationFiles files, File baseDir) {
         File transformsBaseDir = new File(baseDir, "transforms");
         List<File> transforms = new ArrayList<>();
@@ -74,4 +86,13 @@ public class DefaultConfigurationFilesFinder implements ConfigurationFilesFinder
         }
         files.setTransforms(transforms);
     }
+}
+
+class AssetFilenameFilter implements FilenameFilter {
+
+    @Override
+    public boolean accept(File dir, String name) {
+        return !name.startsWith(".");
+    }
+
 }
