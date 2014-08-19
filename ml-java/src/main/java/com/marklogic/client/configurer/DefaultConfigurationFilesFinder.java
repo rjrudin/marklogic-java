@@ -8,6 +8,7 @@ import java.util.List;
 public class DefaultConfigurationFilesFinder implements ConfigurationFilesFinder {
 
     private FilenameFilter assetFilenameFilter = new AssetFilenameFilter();
+    private FilenameFilter transformFilenameFilter = new TransformFilenameFilter();
 
     @Override
     public ConfigurationFiles findConfigurationFiles(File baseDir) {
@@ -24,7 +25,7 @@ public class DefaultConfigurationFilesFinder implements ConfigurationFilesFinder
         List<File> services = new ArrayList<>();
         if (servicesBaseDir.exists()) {
             for (File f : servicesBaseDir.listFiles()) {
-                if (f.getName().endsWith(".xqy")) {
+                if (FilenameUtil.isXqueryFile(f.getName())) {
                     services.add(f);
                 }
             }
@@ -52,15 +53,6 @@ public class DefaultConfigurationFilesFinder implements ConfigurationFilesFinder
         }
     }
 
-    /**
-     * Can be overridden via subclass to provide custom behavior.
-     * 
-     * @return
-     */
-    protected FilenameFilter getAssetFilenameFilter() {
-        return assetFilenameFilter;
-    }
-
     protected void addOptions(ConfigurationFiles files, File baseDir) {
         File queryOptionsBaseDir = new File(baseDir, "options");
         List<File> queryOptions = new ArrayList<>();
@@ -78,13 +70,27 @@ public class DefaultConfigurationFilesFinder implements ConfigurationFilesFinder
         File transformsBaseDir = new File(baseDir, "transforms");
         List<File> transforms = new ArrayList<>();
         if (transformsBaseDir.exists()) {
-            for (File f : transformsBaseDir.listFiles()) {
-                if (f.getName().endsWith(".xsl")) {
-                    transforms.add(f);
-                }
+            for (File f : transformsBaseDir.listFiles(transformFilenameFilter)) {
+                transforms.add(f);
             }
         }
         files.setTransforms(transforms);
+    }
+
+    public FilenameFilter getTransformFilenameFilter() {
+        return transformFilenameFilter;
+    }
+
+    public void setTransformFilenameFilter(FilenameFilter transformFilenameFilter) {
+        this.transformFilenameFilter = transformFilenameFilter;
+    }
+
+    public FilenameFilter getAssetFilenameFilter() {
+        return assetFilenameFilter;
+    }
+
+    public void setAssetFilenameFilter(FilenameFilter assetFilenameFilter) {
+        this.assetFilenameFilter = assetFilenameFilter;
     }
 }
 
@@ -93,6 +99,15 @@ class AssetFilenameFilter implements FilenameFilter {
     @Override
     public boolean accept(File dir, String name) {
         return !name.startsWith(".");
+    }
+
+}
+
+class TransformFilenameFilter implements FilenameFilter {
+
+    @Override
+    public boolean accept(File dir, String name) {
+        return FilenameUtil.isXslFile(name) || FilenameUtil.isXqueryFile(name);
     }
 
 }

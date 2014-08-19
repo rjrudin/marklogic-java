@@ -16,8 +16,10 @@ public class DefaultConfigurationFilesFinderTest extends Assert {
     public void baseDirWithExtensionsOfEachKind() throws IOException {
         ConfigurationFiles files = sut.findConfigurationFiles(getBaseDir("sample-base-dir"));
         assertEquals(1, files.getOptions().size());
-        assertEquals("Only *.xqy files should be included", 1, files.getServices().size());
-        assertEquals("Only *.xsl files should be included", 1, files.getTransforms().size());
+        assertEquals("Only recognized XQuery files should be included; the XML file should be ignored", 2, files
+                .getServices().size());
+        assertEquals("Only recognized XSL files should be included; the XML file should be ignored", 4, files
+                .getTransforms().size());
 
         List<Asset> assets = files.getAssets();
         assertEquals(2, assets.size());

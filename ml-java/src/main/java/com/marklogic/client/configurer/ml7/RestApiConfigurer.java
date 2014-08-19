@@ -16,6 +16,7 @@ import com.marklogic.client.configurer.ConfigurationFiles;
 import com.marklogic.client.configurer.ConfigurationFilesFinder;
 import com.marklogic.client.configurer.ConfigurationFilesManager;
 import com.marklogic.client.configurer.DefaultConfigurationFilesFinder;
+import com.marklogic.client.configurer.FilenameUtil;
 import com.marklogic.client.configurer.PropertiesConfigurationFilesManager;
 import com.marklogic.client.configurer.metadata.ExtensionMetadataAndParams;
 import com.marklogic.client.configurer.metadata.ExtensionMetadataProvider;
@@ -126,7 +127,11 @@ public class RestApiConfigurer extends LoggingObject {
         String transformName = getExtensionNameFromFile(file);
         logger.info(String.format("Installing %s transform from file %s", transformName, file));
         try {
-            mgr.writeXSLTransform(transformName, new FileHandle(file), metadata);
+            if (FilenameUtil.isXslFile(file.getName())) {
+                mgr.writeXSLTransform(transformName, new FileHandle(file), metadata);
+            } else {
+                mgr.writeXQueryTransform(transformName, new FileHandle(file), metadata);
+            }
             configurationFilesManager.saveLastInstalledTimestamp(file, new Date());
         } catch (Exception e) {
             throw new RuntimeException(e);
