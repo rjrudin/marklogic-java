@@ -23,7 +23,7 @@ class UninstallAppTask extends MarkLogicTask {
         try {
             println new XccHelper(xccUrl).executeXquery(xquery)
         } catch (Exception e) {
-            printn "Unable to uninstall app, cause: " + e.getMessage()
+            println "Unable to uninstall app, cause: " + e.getMessage()
         }
     }
 }
