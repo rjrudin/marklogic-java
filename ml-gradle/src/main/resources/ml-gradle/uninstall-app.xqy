@@ -10,6 +10,12 @@ declare function local:find-appservers($config, $app-name)
   return admin:appserver-get-id($config, (), $name)
 };
 
+(:
+Switching the app servers to the Documents database first (necessary so we can delete the underlying databases and 
+forests before we delete the XDBC server we talk to) seems to remove the possibility of the content forest not being
+deleted (see the comment below).
+:)
+
 let $app-name := "%%APP_NAME%%" 
 let $config := admin:get-configuration()
 
