@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.marklogic.gradle.RestHelper;
-import com.marklogic.util.LoggingObject;
 
-public class DatabasePackageManager extends LoggingObject {
+public class DatabasePackageManager {
 
     private String appName;
 
@@ -14,8 +13,16 @@ public class DatabasePackageManager extends LoggingObject {
         this.appName = appName;
     }
 
-    public List<String> install(RestHelper rh, String contentDatabaseFilePath, boolean includeTestDatabase,
-            String format) {
+    /**
+     * @param rh
+     * @param contentDatabaseFilePath
+     * @param includeTestDatabase
+     * @param format
+     * @return a list of the names of databases that were added to the package. The package name is based on the appName
+     *         argument passed into the constructor.
+     */
+    public List<String> addContentDatabasesToPackage(RestHelper rh, String contentDatabaseFilePath,
+            boolean includeTestDatabase, String format) {
         List<String> databaseNames = new ArrayList<>();
 
         String packageName = getPackageName();
@@ -26,8 +33,6 @@ public class DatabasePackageManager extends LoggingObject {
             rh.addDatabase(packageName, getTestContentDatabaseName(), contentDatabaseFilePath, format);
             databaseNames.add(getTestContentDatabaseName());
         }
-
-        rh.installPackage(packageName, format);
 
         return databaseNames;
     }

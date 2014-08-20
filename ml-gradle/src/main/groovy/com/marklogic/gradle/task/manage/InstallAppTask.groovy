@@ -5,6 +5,11 @@ import org.gradle.api.tasks.TaskAction
 import com.marklogic.gradle.AppConfig
 import com.marklogic.gradle.RestHelper
 
+/**
+ * Eventually want most of this logic to move to Java classes that represent packages with different configurations. 
+ * This task should just collect task inputs to configure those Java classes, which will then handle installing an 
+ * application. DatabasePackageManager is the first step in moving code out. 
+ */
 class InstallAppTask extends AbstractManageTask {
 
     String groupName = "Default"
@@ -38,7 +43,7 @@ class InstallAppTask extends AbstractManageTask {
         String contentDatabaseFilePath = getManageConfig().getContentDatabaseFilePath()
         if (new File(contentDatabaseFilePath).exists()) {
             println "Installing databases based on content database package at " + contentDatabaseFilePath
-            mgr.install(rh, contentDatabaseFilePath, installTestResources, format)
+            mgr.addContentDatabasesToPackage(rh, contentDatabaseFilePath, installTestResources, format)
             installPackage = true
         } else {
             println "No content database package file found, so not installing a content database"

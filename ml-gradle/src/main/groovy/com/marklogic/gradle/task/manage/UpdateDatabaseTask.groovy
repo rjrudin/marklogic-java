@@ -15,7 +15,9 @@ class UpdateDatabaseTask extends AbstractManageTask {
         
         String path = getManageConfig().getContentDatabaseFilePath()
         println "Updating databases based on content database package at " + path
-        List<String> names = mgr.install(newRestHelper(), path, isTestPortSet(), format)
+        RestHelper rh = newRestHelper()
+        List<String> names = mgr.addContentDatabasesToPackage(rh, path, isTestPortSet(), format)
+        rh.installPackage(mgr.getPackageName(), format)
         println "Successfully updated database " + names + " in package " + mgr.getPackageName()
     }
 }
