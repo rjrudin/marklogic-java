@@ -7,8 +7,8 @@ class ManageConfig {
 
 	String host = "localhost"
     Integer port = 8002
-	String username = "admin"
-	String password = "admin"
+	String username
+	String password
     
     String contentDatabaseFilePath = "src/main/xqy/packages/content-database.xml"
     String httpServerFilePath = "src/main/xqy/packages/http-server.xml"
