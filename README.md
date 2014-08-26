@@ -20,7 +20,7 @@ The easiest way to get started with these modules is to create a new project wit
       }
       
       dependencies {
-        classpath "com.marklogic:ml-gradle:0.2"
+        classpath "com.marklogic:ml-gradle:0.3"
       }
     }
 
@@ -35,8 +35,8 @@ The easiest way to get started with these modules is to create a new project wit
     }
 
     dependencies {
-      compile "com.marklogic:ml-java:0.2"
-      testCompile "com.marklogic:ml-junit:0.2"
+      compile "com.marklogic:ml-java:0.3"
+      testCompile "com.marklogic:ml-junit:0.3"
     }
 
     ext {

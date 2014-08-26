@@ -41,8 +41,8 @@ repositories {
  * possibly for application code, and the latter supports writing JUnit-based tests. 
  */
 dependencies {
-  compile "com.marklogic:ml-java:0.2"
-  testCompile "com.marklogic:ml-junit:0.2"
+  compile "com.marklogic:ml-java:0.3"
+  testCompile "com.marklogic:ml-junit:0.3"
 }
 
 
