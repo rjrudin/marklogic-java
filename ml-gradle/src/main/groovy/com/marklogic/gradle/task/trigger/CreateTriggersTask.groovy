@@ -10,7 +10,8 @@ class CreateTriggersTask extends MarkLogicTask {
     String xccUrl
     String triggerName
     String description
-
+    String triggersDatabaseName
+    
     String dataEventScope = "collection"
     String dataEventContent = "document"
     String dataEventCommit = "pre"
@@ -33,6 +34,10 @@ class CreateTriggersTask extends MarkLogicTask {
     void createTriggers() {
         XccHelper xccHelper = new XccHelper(xccUrl)
 
+        if (!triggersDatabaseName) {
+            triggersDatabaseName = getAppName() + "-triggers"
+        }
+        
         boolean isAnyPropertyContent = !dataEventContentArgs
 
         if (isAnyPropertyContent) {
@@ -91,7 +96,8 @@ class CreateTriggersTask extends MarkLogicTask {
     String wrapInEval(String xquery) {
         String preamble = "xdmp:eval('"
         preamble += 'xquery version "1.0-ml"; import module namespace trgr="http://marklogic.com/xdmp/triggers" at "/MarkLogic/triggers.xqy"; '
-        String ending = "', (), <options xmlns='xdmp:eval'><database>{xdmp:database('obp-triggers')}</database></options>)"
+        
+        String ending = "', (), <options xmlns='xdmp:eval'><database>{xdmp:database('" + triggersDatabaseName + "')}</database></options>)"
 
         return preamble + xquery + ending
     }
