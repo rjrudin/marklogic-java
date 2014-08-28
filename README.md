@@ -15,7 +15,7 @@ The easiest way to get started with these modules is to create a new project wit
     buildscript {
       repositories {
         mavenCentral()
-        maven {url "https://developer.marklogic.com/maven2/"}
+        maven {url "http://developer.marklogic.com/maven2/"}
         maven {url "http://rjrudin.github.io/marklogic-java/releases"}
       }
       
@@ -30,7 +30,7 @@ The easiest way to get started with these modules is to create a new project wit
 
     repositories {
       mavenCentral()
-      maven {url "https://developer.marklogic.com/maven2/"}
+      maven {url "http://developer.marklogic.com/maven2/"}
       maven {url "http://rjrudin.github.io/marklogic-java/releases"}
     }
 
