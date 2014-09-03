@@ -35,8 +35,7 @@
   <xsl:template match="db:path-namespaces">
     <xsl:copy>
       <xsl:apply-templates />
-      <xsl:apply-templates
-        select="$mergePackage/db:config/db:package-database-properties/db:path-namespaces/db:path-namespace" />
+      <xsl:apply-templates select="$mergePackage/db:config/db:package-database-properties/db:path-namespaces/db:path-namespace" />
     </xsl:copy>
   </xsl:template>
 
@@ -62,6 +61,19 @@
       <xsl:apply-templates
         select="$mergePackage/db:config/db:package-database-properties/db:geospatial-element-attribite-pair-indexes/db:geospatial-element-attribute-pair-index" />
     </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="db:links/node()[text()]">
+    <xsl:variable name="nodeName" select="name(.)" />
+    <xsl:variable name="mergeNode" select="$mergePackage/db:config/db:links/node()[name(.) = $nodeName]" />
+    <xsl:choose>
+      <xsl:when test="$mergeNode">
+        <xsl:copy-of select="$mergeNode" />
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy-of select="." />
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
 </xsl:stylesheet>

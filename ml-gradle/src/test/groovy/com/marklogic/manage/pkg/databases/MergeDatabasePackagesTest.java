@@ -35,8 +35,10 @@ public class MergeDatabasePackagesTest extends XmlHelper {
         db.assertElementExists("//db:collection-lexicon[. = 'true']");
 
         db.assertElementExists("//db:geospatial-element-indexes/db:geospatial-element-index[db:localname = 'testRegion']");
-
-        db.prettyPrint();
+        
+        db.assertElementExists("/db:package-database/db:config/db:links/db:schema-database[. = 'my-schemas-database']");
+        db.assertElementExists("/db:package-database/db:config/db:links/db:security-database[. = 'my-security-database']");
+        //db.prettyPrint();
     }
 
     @Override

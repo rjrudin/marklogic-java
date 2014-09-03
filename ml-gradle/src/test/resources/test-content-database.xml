@@ -24,6 +24,9 @@
         </geospatial-element-index>
       </geospatial-element-indexes>
     </package-database-properties>
+    <links>
+      <schema-database>my-schemas-database</schema-database>
+    </links>
   </config>
 </package-database>
 
