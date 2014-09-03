@@ -6,14 +6,15 @@ import com.marklogic.gradle.AppConfig
 import com.marklogic.gradle.RestHelper
 
 /**
- * Eventually want most of this logic to move to Java classes that represent packages with different configurations. 
- * This task should just collect task inputs to configure those Java classes, which will then handle installing an 
- * application. DatabasePackageManager is the first step in moving code out. 
+ * Eventually want most of this logic to move to Java classes that represent packages with different configurations.
+ * This task should just collect task inputs to configure those Java classes, which will then handle installing an
+ * application. DatabasePackageManager is the first step in moving code out.
  */
 class InstallAppTask extends AbstractManageTask {
 
     String groupName = "Default"
     String triggersDatabaseFilePath = "src/main/xqy/packages/triggers-database.xml"
+    String schemasDatabaseFilePath = "src/main/xqy/packages/schemas-database.xml"
     String xdbcServerFilename = "src/main/xqy/packages/xdbc-server.xml"
 
     String format = "json"
@@ -36,6 +37,12 @@ class InstallAppTask extends AbstractManageTask {
         if (new File(triggersDatabaseFilePath).exists()) {
             String triggersDatabaseName = appName + "-triggers"
             rh.addDatabase(packageName, triggersDatabaseName, triggersDatabaseFilePath, format)
+            installPackage = true
+        }
+
+        if (new File(schemasDatabaseFilePath).exists()) {
+            String schemasDatabaseName = appName + "-schemas"
+            rh.addDatabase(packageName, schemasDatabaseName, schemasDatabaseFilePath, format)
             installPackage = true
         }
 
