@@ -21,35 +21,35 @@ class ConfigureBitemporalTask extends DefaultTask {
                     "xquery version '1.0-ml';                                                          " +
                     "import module namespace temporal = 'http://marklogic.com/xdmp/temporal'           " +
                     "    at '/MarkLogic/temporal.xqy';                                                 " +
-                    "declare variable \$config as element(temporal:config) external;                    " +
+                    "declare variable \$config as element(temporal:config) external;                   " +
                     "(                                                                                 " +
-                    "    for \$axis in \$config/temporal:axis                                            " +
+                    "    for \$axis in \$config/temporal:axis                                          " +
                     "    return                                                                        " +
                     "        try {                                                                     " +
                     "          temporal:axis-create(                                                   " +
-                    "            \$axis/fn:data(temporal:axis-name),                                    " +
-                    "            cts:reference-parse(\$axis/temporal:axis-start/cts:element-reference), " +
-                    "            cts:reference-parse(\$axis/temporal:axis-end/cts:element-reference)    " +
+                    "            \$axis/fn:data(temporal:axis-name),                                   " +
+                    "            cts:reference-parse(\$axis/temporal:axis-start/cts:element-reference)," +
+                    "            cts:reference-parse(\$axis/temporal:axis-end/cts:element-reference)   " +
                     "          )                                                                       " +
                     "        }                                                                         " +
-                    "        catch(\$e) {                                                               " +
-                    "            if (\$e/error:code = 'TEMPORAL-DUPAXIS') then                          " +
+                    "        catch(\$e) {                                                              " +
+                    "            if (\$e/error:code = 'TEMPORAL-DUPAXIS') then                         " +
                     "                ()                                                                " +
                     "            else                                                                  " +
                     "                xdmp:rethrow()                                                    " +
                     "        }                                                                         " +
                     "    ,                                                                             " +
-                    "    for \$collection in \$config/temporal:collection                                " +
+                    "    for \$collection in \$config/temporal:collection                              " +
                     "    return                                                                        " +
                     "        try {                                                                     " +
                     "          temporal:collection-create(                                             " +
-                    "            \$collection/fn:data(temporal:collection-name),                        " +
-                    "            \$collection/fn:data(temporal:system-axis),                            " +
-                    "            \$collection/fn:data(temporal:valid-axis)                              " +
+                    "            \$collection/fn:data(temporal:collection-name),                       " +
+                    "            \$collection/fn:data(temporal:system-axis),                           " +
+                    "            \$collection/fn:data(temporal:valid-axis)                             " +
                     "          )                                                                       " +
                     "        }                                                                         " +
-                    "        catch(\$e) {                                                               " +
-                    "            if (\$e/error:code = 'TEMPORAL-DUPCOLLECTION') then                    " +
+                    "        catch(\$e) {                                                              " +
+                    "            if (\$e/error:code = 'TEMPORAL-DUPCOLLECTION') then                   " +
                     "                ()                                                                " +
                     "            else                                                                  " +
                     "                xdmp:rethrow()                                                    " +
