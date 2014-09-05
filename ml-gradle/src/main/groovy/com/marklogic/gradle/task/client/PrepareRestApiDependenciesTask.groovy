@@ -1,7 +1,8 @@
 package com.marklogic.gradle.task.client
 
-import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.internal.project.DefaultAntBuilder
 
 /**
  * Purpose of this task is to unzip each restApi dependency to the build directory and then register the path of each
@@ -18,9 +19,11 @@ class PrepareRestApiDependenciesTask extends ClientTask {
             def buildDir = new File("build/mlRestApi")
             buildDir.delete()
             buildDir.mkdirs()
-
-            def ant = new AntBuilder()
+            
+            // Constructing a DefaultAntBuilder seems to avoid Xerces-related classpath issues
+            def ant = new DefaultAntBuilder(getProject())
             for (f in config.files) {
+                println "Unzipping file: " + f.getAbsolutePath()
                 ant.unzip(src: f, dest: buildDir, overwrite: "true")
             }
 
