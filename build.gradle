@@ -1,56 +1,56 @@
 subprojects {
-	apply plugin: 'eclipse'
-	group = 'com.marklogic'
-	repositories {
-		mavenCentral()
-  	maven {url "https://developer.marklogic.com/maven2/"}
-	}
+  apply plugin: 'eclipse'
+  group = 'com.marklogic'
+  repositories {
+    mavenCentral()
+    maven {url "https://developer.marklogic.com/maven2/"}
+  }
 
-	apply plugin: 'maven-publish'
+  apply plugin: 'maven-publish'
 
-	ext {
-		pubVersion = project.hasProperty("pubVersion") ? project.getProperty("pubVersion") : "0.3." + java.util.Calendar.getInstance().getTimeInMillis()
-	}
+  ext {
+    pubVersion = project.hasProperty("pubVersion") ? project.getProperty("pubVersion") : "0.3." + java.util.Calendar.getInstance().getTimeInMillis()
+  }
 
-	publishing {
-		publications {
+  publishing {
+    publications {
       mavenJava(MavenPublication) {
-      	groupId 'com.marklogic'
-	      artifactId getProject().getName()
-	      version pubVersion
-				from components.java
+        groupId 'com.marklogic'
+        artifactId getProject().getName()
+        version pubVersion
+        from components.java
       }
       repositories {
-				maven {
-		      if (project.hasProperty("nexusPublish")) {
-		        url "file:///usr/local/sonatype-work/nexus/storage/snapshots"
-		      } else if (project.hasProperty("release")) {
-		        url "file://$projectDir/../../gh-pages-marklogic-java/releases"
-		      }
-		      else {
-		        url mavenLocal().url
-		      }
-				}
-    	}
+        maven {
+          if (project.hasProperty("nexusPublish")) {
+            url "file:///usr/local/sonatype-work/nexus/storage/snapshots"
+          } else if (project.hasProperty("release")) {
+            url "file://$projectDir/../../gh-pages-marklogic-java/releases"
+          }
+          else {
+            url mavenLocal().url
+          }
+        }
+      }
     }
-	}
+  }
 }
 
 project(":ml-java") {
-	apply plugin: 'java'
+  apply plugin: 'java'
 }
 
 project(":ml-junit") {
-	apply plugin: 'java'
-	dependencies {
-	  compile project(":ml-java")
-	}
+  apply plugin: 'java'
+  dependencies {
+    compile project(":ml-java")
+  }
 }
 
 project(":ml-gradle") {
-	apply plugin: 'groovy'
-	dependencies {
-	  compile project(":ml-java")
-	  testCompile project(":ml-junit")
-	}
+  apply plugin: 'groovy'
+  dependencies {
+    compile project(":ml-java")
+    testCompile project(":ml-junit")
+  }
 }
