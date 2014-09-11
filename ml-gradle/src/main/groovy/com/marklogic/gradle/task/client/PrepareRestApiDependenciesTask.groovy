@@ -15,28 +15,35 @@ class PrepareRestApiDependenciesTask extends ClientTask {
         String configurationName = "mlRestApi"
         if (getProject().configurations.find {it.name == configurationName}) {
             Configuration config = getProject().getConfigurations().getAt(configurationName)
-            println "Found " + configurationName + " configuration, will unzip all of its dependencies to build/mlRestApi"
-            def buildDir = new File("build/mlRestApi")
-            buildDir.delete()
-            buildDir.mkdirs()
-            
-            // Constructing a DefaultAntBuilder seems to avoid Xerces-related classpath issues
-            def ant = new DefaultAntBuilder(getProject())
-            for (f in config.files) {
-                println "Unzipping file: " + f.getAbsolutePath()
-                ant.unzip(src: f, dest: buildDir, overwrite: "true")
-            }
+            if (config.files) {
+                println "Found " + configurationName + " configuration, will unzip all of its dependencies to build/mlRestApi"
+                
+                def buildDir = new File("build/mlRestApi")
+                buildDir.delete()
+                buildDir.mkdirs()
 
-            List<String> directories = getAppConfig().configPaths
-            // TODO Retain what's there already
-            directories.clear()
-            for (dir in buildDir.listFiles()) {
-                if (dir.isDirectory()) {
-                    directories.add(dir.getAbsolutePath())
+                // Constructing a DefaultAntBuilder seems to avoid Xerces-related classpath issues
+                def ant = new DefaultAntBuilder(getProject())
+                for (f in config.files) {
+                    println "Unzipping file: " + f.getAbsolutePath()
+                    ant.unzip(src: f, dest: buildDir, overwrite: "true")
                 }
+
+                List<String> configPaths = getAppConfig().configPaths
+                List<String> newConfigPaths = new ArrayList<String>()
+                
+                for (dir in buildDir.listFiles()) {
+                    if (dir.isDirectory()) {
+                        newConfigPaths.add(dir.getAbsolutePath())
+                    }
+                }
+                
+                // The config paths of the dependencies should be before the original config paths 
+                newConfigPaths.addAll(configPaths)
+                getAppConfig().setConfigPaths(newConfigPaths)
+                
+                println "Finished unzipping mlRestApi dependencies; will now include modules at " + getAppConfig().configPaths
             }
-            directories.add("src/main/xqy")
-            println "Finished unzipping mlRestApi dependencies; will now include modules at " + directories
         }
     }
 }

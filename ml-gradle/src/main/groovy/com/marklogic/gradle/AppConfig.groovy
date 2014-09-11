@@ -12,5 +12,11 @@ class AppConfig {
     Integer testRestPort
     Integer testXdbcPort
     
-    List<String> configPaths = new ArrayList<String>()
+    String defaultConfigPath = "src/main/xqy"
+    List<String> configPaths
+    
+    public AppConfig() {
+        configPaths = new ArrayList<String>()
+        configPaths.add(defaultConfigPath)
+    }
 }
