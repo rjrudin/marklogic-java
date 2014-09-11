@@ -3,9 +3,10 @@ package com.marklogic.gradle.task.manage
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
+import com.marklogic.gradle.MarkLogicTask;
 import com.marklogic.gradle.xcc.XccHelper
 
-class ConfigureBitemporalTask extends DefaultTask {
+class ConfigureBitemporalTask extends MarkLogicTask {
 
     String xccUrl
 
@@ -59,6 +60,11 @@ class ConfigureBitemporalTask extends DefaultTask {
                 "(xs:QName('config'), xdmp:unquote('${xml}')/*))                                       ";
 
             println "Creating bi-temporal axes and collections"
+            
+            if (!xccUrl) {
+                xccUrl = getDefaultXccUrl()
+            }
+        
             new XccHelper(xccUrl).executeXquery(xquery)
         }
     }

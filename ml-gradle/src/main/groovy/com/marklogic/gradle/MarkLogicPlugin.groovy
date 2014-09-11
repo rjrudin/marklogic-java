@@ -9,6 +9,7 @@ import com.marklogic.gradle.task.UninstallAppTask
 import com.marklogic.gradle.task.client.ConfigureAppTask
 import com.marklogic.gradle.task.client.PrepareRestApiDependenciesTask;
 import com.marklogic.gradle.task.client.service.CreateResourceTask;
+import com.marklogic.gradle.task.manage.ConfigureBitemporalTask;
 import com.marklogic.gradle.task.manage.InstallAppTask
 import com.marklogic.gradle.task.manage.ManageConfig
 import com.marklogic.gradle.task.manage.MergeDatabasePackagesTask
@@ -45,5 +46,8 @@ class MarkLogicPlugin implements Plugin<Project> {
         project.task("mlConfigureApp", type: ConfigureAppTask, group: group, dependsOn: "mlPrepareRestApiDependencies")
 
         project.task("mlCreateResource", type: CreateResourceTask, group: group)
+        
+        // Not naming this "mlConfigureBitemporal" so that "mlconf" can still be used for "mlConfigureApp"
+        project.task("mlBitemporalConfigure", type: ConfigureBitemporalTask, group: group)
     }
 }

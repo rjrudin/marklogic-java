@@ -1,11 +1,13 @@
 package com.marklogic.gradle.task.security
 
 import org.gradle.api.DefaultTask
+
 import org.gradle.api.tasks.TaskAction
 
+import com.marklogic.gradle.MarkLogicTask;
 import com.marklogic.gradle.xcc.XccHelper
 
-class RemoveUsersTask extends DefaultTask {
+class RemoveUsersTask extends MarkLogicTask {
 
     String xccUrl
     String[] usernames
@@ -20,6 +22,11 @@ class RemoveUsersTask extends DefaultTask {
                 "\", (), <options xmlns='xdmp:eval'><database>{xdmp:security-database()}</database></options>)";
 
         println "Removing users ${usernamesStr}"
+        
+        if (!xccUrl) {
+            xccUrl = getDefaultXccUrl()
+        }
+        
         new XccHelper(xccUrl).executeXquery(xquery)
     }
 }
