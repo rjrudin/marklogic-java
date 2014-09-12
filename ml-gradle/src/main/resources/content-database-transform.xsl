@@ -32,6 +32,14 @@
     </xsl:copy>
   </xsl:template>
 
+  <xsl:template match="db:range-element-attribute-indexes">
+    <xsl:copy>
+      <xsl:apply-templates />
+      <xsl:apply-templates
+        select="$mergePackage/db:config/db:package-database-properties/db:range-element-attribute-indexes/db:range-element-attribute-index" />
+    </xsl:copy>
+  </xsl:template>
+
   <xsl:template match="db:path-namespaces">
     <xsl:copy>
       <xsl:apply-templates />
