@@ -6,7 +6,6 @@ buildscript {
     mavenCentral()
     maven {url "https://developer.marklogic.com/maven2/"}
     maven {url "http://rjrudin.github.io/marklogic-java/releases"}
-    mavenLocal()
   }
   
   dependencies {
@@ -32,13 +31,12 @@ repositories {
   mavenCentral()
   maven {url "https://developer.marklogic.com/maven2/"}
   maven {url "http://rjrudin.github.io/marklogic-java/releases"}
-  mavenLocal()
 }
 
 
 /*
- * This expresses dependencies on the ml-java and ml-junit libraries. The former is used for the "watch" task below, and
- * possibly for application code, and the latter supports writing JUnit-based tests. 
+ * This expresses dependencies on the ml-java and ml-junit libraries. The former is typically used for application 
+ * code, and the latter supports writing JUnit-based tests. 
  */
 dependencies {
   compile "com.marklogic:ml-java:0.4"
@@ -84,15 +82,3 @@ ext {
  */
 mlMergeDatabasePackages.mergePackageFilePaths = ["src/main/xqy/packages/content-database1.xml", "src/main/xqy/packages/content-database2.xml"]
 mlMergeHttpServerPackages.mergePackageFilePaths = ["src/main/xqy/packages/http-server.xml"]
-
-
-/*
- * This watch task runs a Java program that checks for new/modified modules in the given directory, and when such
- * modules are found, they're automatically installed into the REST API server.
- */
-task watch (type: JavaExec, dependsOn: 'classes') {
-  main = 'com.marklogic.client.configurer.ml7.ConfigurationFilesWatcher'
-  classpath = sourceSets.main.runtimeClasspath
-  args 'src/main/xqy', mlAppConfig.host, mlAppConfig.restPort, mlUsername, mlPassword
-}
-

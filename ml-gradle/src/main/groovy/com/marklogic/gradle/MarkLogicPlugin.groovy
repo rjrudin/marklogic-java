@@ -8,6 +8,7 @@ import com.marklogic.gradle.task.DeleteLastInstalledTimestampsFileTask
 import com.marklogic.gradle.task.UninstallAppTask
 import com.marklogic.gradle.task.client.ConfigureAppTask
 import com.marklogic.gradle.task.client.PrepareRestApiDependenciesTask;
+import com.marklogic.gradle.task.client.WatchTask;
 import com.marklogic.gradle.task.client.service.CreateResourceTask;
 import com.marklogic.gradle.task.manage.ConfigureBitemporalTask;
 import com.marklogic.gradle.task.manage.InstallAppTask
@@ -49,5 +50,7 @@ class MarkLogicPlugin implements Plugin<Project> {
         
         // Not naming this "mlConfigureBitemporal" so that "mlconf" can still be used for "mlConfigureApp"
         project.task("mlBitemporalConfigure", type: ConfigureBitemporalTask, group: group)
+        
+        project.task("mlWatch", type: WatchTask, group: group)
     }
 }
