@@ -9,7 +9,7 @@ buildscript {
   }
   
   dependencies {
-    classpath "com.marklogic:ml-gradle:0.4"
+    classpath "com.marklogic:ml-gradle:0.5"
   }
 }
 
@@ -39,8 +39,8 @@ repositories {
  * code, and the latter supports writing JUnit-based tests. 
  */
 dependencies {
-  compile "com.marklogic:ml-java:0.4"
-  testCompile "com.marklogic:ml-junit:0.4"
+  compile "com.marklogic:ml-java:0.5"
+  testCompile "com.marklogic:ml-junit:0.5"
 }
 
 
@@ -51,13 +51,14 @@ dependencies {
  * mlAppConfig is used for defining the host/port/username/password of the application that will be installed and 
  * configured. mlManageConfig is used for defining the host/port/username/password of the REST Management API that will
  * be used for installing the application. Both default to "localhost" for the host. mlAppConfig defaults to ports 8100
- * and 8101 for REST/XDBC servers. mlManageConfig defaults to port 8002 for the Management API. Both will use mlUsername
- * and mlPassword if those properties are defined, which we do below. 
+ * and 8101 for REST/XDBC servers. mlManageConfig defaults to port 8002 for the Management API. Both will use mlUsername,
+ * mlPassword, and mlHost if any of those are defined, as we do so below.  
  */
 ext {
   mlUsername = "admin"
   mlPassword = "admin"
-  
+  mlHost = "localhost"
+
   mlAppConfig {
     name = "sample-project"
   }
