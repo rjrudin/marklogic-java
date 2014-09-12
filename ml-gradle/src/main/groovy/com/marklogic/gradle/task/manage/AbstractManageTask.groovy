@@ -2,40 +2,33 @@ package com.marklogic.gradle.task.manage
 
 import groovyx.net.http.HttpResponseDecorator
 
-import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 
-import com.marklogic.gradle.MarkLogicTask;
+import com.marklogic.gradle.MarkLogicTask
 import com.marklogic.gradle.RestHelper
 
 class AbstractManageTask extends MarkLogicTask {
 
     ManageConfig getManageConfig() {
-        getProject().property("mlManageConfig")
-    }
-
-    String getManageUsername() {
-        ManageConfig config = getManageConfig()
-        if (config.getUsername() != null) {
-            return config.getUsername()
+        ManageConfig config = getProject().property("mlManageConfig")
+        if (getMlHost()) {
+            config.setHost(getMlHost())
         }
-        return getMlUsername()
-    }
-    
-    String getManagePassword() {
-        ManageConfig config = getManageConfig()
-        if (config.getPassword() != null) {
-            return config.getPassword()
+        if (getMlUsername()) {
+            config.setUsername(getMlUsername())
         }
-        return getMlPassword()
+        if (getMlPassword()) {
+            config.setPassword(getMlPassword())
+        }
+        return config
     }
 
     RestHelper newRestHelper() {
-        ManageConfig manageConfig = getProject().property("mlManageConfig")
+        ManageConfig config = getManageConfig()
         RestHelper h = new RestHelper()
-        h.setUrl("http://" + manageConfig.getHost() + ":" + manageConfig.getPort())
-        h.setUsername(getManageUsername())
-        h.setPassword(getManagePassword())
+        h.setUrl("http://" + config.getHost() + ":" + config.getPort())
+        h.setUsername(config.getUsername())
+        h.setPassword(config.getPassword())
         return h
     }
 

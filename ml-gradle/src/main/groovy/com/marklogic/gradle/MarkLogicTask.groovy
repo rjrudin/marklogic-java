@@ -9,50 +9,37 @@ class MarkLogicTask extends DefaultTask {
     }
 
     AppConfig getAppConfig() {
-        getProject().property("mlAppConfig")
+        AppConfig config = getProject().property("mlAppConfig")
+        if (getMlHost()) {
+            config.setHost(getMlHost())
+        }
+        if (getMlUsername()) {
+            config.setUsername(getMlUsername())
+        }
+        if (getMlPassword()) {
+            config.setPassword(getMlPassword())
+        }
+        return config
     }
     
     String getDefaultXccUrl() {
-        "xcc://${getClientUsername()}:${getClientPassword()}@${getAppConfig().getHost()}:${getAppConfig().getXdbcPort()}"
+        AppConfig config = getAppConfig()
+        "xcc://${config.getUsername()}:${config.getPassword()}@${config.getHost()}:${config.getXdbcPort()}"
     }
     
     boolean isTestPortSet() {
         getAppConfig().getTestRestPort() != null
     }
     
-    /**
-     * mlUsername is considered a "default" username to be used for both the manage and client configuration
-     * when no username is specified for those.
-     * 
-     * @return
-     */
     String getMlUsername() {
         getProject().property("mlUsername")
     }
     
-    /**
-     * mlPassword is considered a "default" username to be used for both the manage and client configuration
-     * when no password is specified for those.
-     * 
-     * @return
-     */
     String getMlPassword() {
         getProject().property("mlPassword")
     }
     
-    String getClientUsername() {
-        AppConfig config = getAppConfig()
-        if (config.getUsername() != null) {
-            return config.getUsername()
-        }
-        return getMlUsername()
-    }
-    
-    String getClientPassword() {
-        AppConfig config = getAppConfig()
-        if (config.getPassword() != null) {
-            return config.getPassword()
-        }
-        return getMlPassword()
+    String getMlHost() {
+        getProject().property("mlHost")
     }
 }
