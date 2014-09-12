@@ -3,7 +3,7 @@ subprojects {
   group = 'com.marklogic'
   repositories {
     mavenCentral()
-    maven {url "https://developer.marklogic.com/maven2/"}
+    maven {url "http://developer.marklogic.com/maven2/"}
   }
 
   apply plugin: 'maven-publish'
