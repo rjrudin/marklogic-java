@@ -1,6 +1,9 @@
 <package-database xmlns="http://marklogic.com/manage/package/databases">
   <config>
     <package-database-properties>
+      <word-lexicons>
+        <word-lexicon>http://marklogic.com/collation/</word-lexicon>
+      </word-lexicons>
       <range-element-indexes>
         <range-element-index>
           <scalar-type>dateTime</scalar-type>

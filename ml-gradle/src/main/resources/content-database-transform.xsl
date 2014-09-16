@@ -24,6 +24,13 @@
     </xsl:choose>
   </xsl:template>
 
+  <xsl:template match="db:word-lexicons">
+    <xsl:copy>
+      <xsl:apply-templates />
+      <xsl:apply-templates select="$mergePackage/db:config/db:package-database-properties/db:word-lexicons/db:word-lexicon" />
+    </xsl:copy>
+  </xsl:template>
+
   <xsl:template match="db:range-element-indexes">
     <xsl:copy>
       <xsl:apply-templates />
