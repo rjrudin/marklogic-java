@@ -43,14 +43,15 @@ class MarkLogicPlugin implements Plugin<Project> {
         project.task("mlUpdateContentDatabase", type: UpdateDatabaseTask, group: group, dependsOn: "mlMergeDatabasePackages")
         project.task("mlUpdateHttpServers", type: UpdateHttpServerTask, group: group, dependsOn: "mlMergeHttpServerPackages")
 
-
         project.task("mlConfigureApp", type: ConfigureAppTask, group: group, dependsOn: "mlPrepareRestApiDependencies")
 
+        project.task("mlDeploy", type: ConfigureAppTask, group: group, dependsOn: ["mlInstallApp"])
+
         project.task("mlCreateResource", type: CreateResourceTask, group: group)
-        
+
         // Not naming this "mlConfigureBitemporal" so that "mlconf" can still be used for "mlConfigureApp"
         project.task("mlBitemporalConfigure", type: ConfigureBitemporalTask, group: group)
-        
+
         project.task("mlWatch", type: WatchTask, group: group)
     }
 }
