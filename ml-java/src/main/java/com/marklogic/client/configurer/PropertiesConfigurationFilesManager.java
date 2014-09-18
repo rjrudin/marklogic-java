@@ -10,7 +10,7 @@ import com.marklogic.util.LoggingObject;
 
 public class PropertiesConfigurationFilesManager extends LoggingObject implements ConfigurationFilesManager {
 
-    public static final String DEFAULT_FILE_PATH = "build/ml-last-installed-timestamps.properties";
+    public static final String DEFAULT_FILE_PATH = "build/ml-last-configured-timestamps.properties";
 
     private Properties props;
     private File propertiesFile;
