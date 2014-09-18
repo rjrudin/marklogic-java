@@ -9,7 +9,7 @@ subprojects {
   apply plugin: 'maven-publish'
 
   ext {
-    pubVersion = project.hasProperty("pubVersion") ? project.getProperty("pubVersion") : "0.3." + java.util.Calendar.getInstance().getTimeInMillis()
+    pubVersion = project.hasProperty("pubVersion") ? project.getProperty("pubVersion") : "0.5." + java.util.Calendar.getInstance().getTimeInMillis()
   }
 
   publishing {
