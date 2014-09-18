@@ -3,7 +3,7 @@ package com.marklogic.gradle
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-import com.marklogic.gradle.task.DeleteLastInstalledTimestampsFileTask
+import com.marklogic.gradle.task.DeleteLastConfiguredTimestampsFileTask
 import com.marklogic.gradle.task.UninstallAppTask
 import com.marklogic.gradle.task.client.ConfigureAppTask
 import com.marklogic.gradle.task.client.PrepareRestApiDependenciesTask
@@ -70,7 +70,7 @@ class MarkLogicPlugin implements Plugin<Project> {
         project.getConfigurations().create("mlRestApi")
 
         String group = "MarkLogic"
-        project.task("mlDeleteLastConfigured", type: DeleteLastInstalledTimestampsFileTask, group: group)
+        project.task("mlDeleteLastConfigured", type: DeleteLastConfiguredTimestampsFileTask, group: group)
         project.task("mlUninstallApp", type: UninstallAppTask, group: group)
 
         project.task("mlPrepareRestApiDependencies", type: PrepareRestApiDependenciesTask, group: group, dependsOn: project.configurations["mlRestApi"])
