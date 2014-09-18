@@ -10,7 +10,7 @@ class UpdateDatabaseTask extends AbstractManageTask {
     
     @TaskAction
     void updateDatabase() {
-        String appName = getAppName()
+        String appName = getAppConfig().getName()
         DatabasePackageManager mgr = new DatabasePackageManager(appName)
         
         String path = getManageConfig().getContentDatabaseFilePath()

@@ -35,7 +35,7 @@ class CreateTriggersTask extends MarkLogicTask {
         XccHelper xccHelper = new XccHelper(xccUrl)
 
         if (!triggersDatabaseName) {
-            triggersDatabaseName = getAppName() + "-triggers"
+            triggersDatabaseName = getAppConfig().getName() + "-triggers"
         }
         
         boolean isAnyPropertyContent = !dataEventContentArgs
@@ -62,7 +62,7 @@ class CreateTriggersTask extends MarkLogicTask {
 
     String buildCreationXquery(String triggerName, String dataEventContentArg) {
         if (moduleDatabase == null) {
-            moduleDatabase = getAppName() + "-modules"
+            moduleDatabase = getAppConfig().getName() + "-modules"
         }
 
         String dataEventScopeFunction = 'trgr:' + dataEventScope + '-scope(' + dataEventScopeArgs.collect{'"' + it + '"'}.join(', ') + ')'

@@ -11,7 +11,7 @@ class UpdateHttpServerTask extends AbstractManageTask {
 
     @TaskAction
     void addHttpServer() {
-        String appName = getAppName()        
+        String appName = getAppConfig().getName()        
         String packageName = appName + "-package"
 
         String path = getManageConfig().getHttpServerFilePath()

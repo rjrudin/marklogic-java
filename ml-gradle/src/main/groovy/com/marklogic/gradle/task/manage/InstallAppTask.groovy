@@ -22,7 +22,7 @@ class InstallAppTask extends AbstractManageTask {
     @TaskAction
     void installApp() {
         AppConfig appConfig = getAppConfig()
-        String appName = getAppName()
+        String appName = appConfig.getName()
         String packageName = appName + "-package"
         String restServerName = appName
 

@@ -18,8 +18,9 @@ class UninstallAppTask extends MarkLogicTask {
         }
 
         String xquery = new String(FileCopyUtils.copyToByteArray(new ClassPathResource("ml-gradle/uninstall-app.xqy").getInputStream()))
-        xquery = xquery.replace("%%APP_NAME%%", getAppName())
-        println "Uninstalling app with name " + getAppName()
+        String appName = getAppConfig().getName()
+        xquery = xquery.replace("%%APP_NAME%%", appName)
+        println "Uninstalling app with name " + appName
         try {
             println new XccHelper(xccUrl).executeXquery(xquery)
         } catch (Exception e) {

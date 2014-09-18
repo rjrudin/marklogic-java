@@ -10,17 +10,7 @@ import com.marklogic.gradle.RestHelper
 class AbstractManageTask extends MarkLogicTask {
 
     ManageConfig getManageConfig() {
-        ManageConfig config = getProject().property("mlManageConfig")
-        if (getMlHost()) {
-            config.setHost(getMlHost())
-        }
-        if (getMlUsername()) {
-            config.setUsername(getMlUsername())
-        }
-        if (getMlPassword()) {
-            config.setPassword(getMlPassword())
-        }
-        return config
+        getProject().property("mlManageConfig")
     }
 
     RestHelper newRestHelper() {

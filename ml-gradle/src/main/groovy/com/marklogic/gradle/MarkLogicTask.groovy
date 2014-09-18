@@ -4,22 +4,8 @@ import org.gradle.api.DefaultTask;
 
 class MarkLogicTask extends DefaultTask {
 
-    String getAppName() {
-        getAppConfig().getName()
-    }
-
     AppConfig getAppConfig() {
-        AppConfig config = getProject().property("mlAppConfig")
-        if (getMlHost()) {
-            config.setHost(getMlHost())
-        }
-        if (getMlUsername()) {
-            config.setUsername(getMlUsername())
-        }
-        if (getMlPassword()) {
-            config.setPassword(getMlPassword())
-        }
-        return config
+        getProject().property("mlAppConfig")
     }
     
     String getDefaultXccUrl() {
@@ -29,17 +15,5 @@ class MarkLogicTask extends DefaultTask {
     
     boolean isTestPortSet() {
         getAppConfig().getTestRestPort() != null
-    }
-    
-    String getMlUsername() {
-        getProject().property("mlUsername")
-    }
-    
-    String getMlPassword() {
-        getProject().property("mlPassword")
-    }
-    
-    String getMlHost() {
-        getProject().property("mlHost")
     }
 }
