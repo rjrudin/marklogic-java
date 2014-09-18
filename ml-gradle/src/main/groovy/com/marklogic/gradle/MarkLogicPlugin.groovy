@@ -20,53 +20,9 @@ import com.marklogic.gradle.task.manage.UpdateHttpServerTask
 class MarkLogicPlugin implements Plugin<Project> {
 
     void apply(Project project) {
-        ManageConfig manageConfig = new ManageConfig()
-        if (project.hasProperty("mlHost")) {
-            def host = project.property("mlHost")
-            println "Manage app host: " + host 
-            manageConfig.setHost(host)
-        }
-        if (project.hasProperty("mlUsername")) {
-            def username = project.property("mlUsername")
-            println "Manage app username: " + username
-            manageConfig.setUsername(username)
-        }
-        if (project.hasProperty("mlPassword")) {
-            manageConfig.setPassword(project.property("mlPassword"))
-        }
-        project.extensions.add("mlManageConfig", manageConfig)
-
-        AppConfig appConfig = new AppConfig()
-        if (project.hasProperty("mlAppName")) {
-            def name = project.property("mlAppName")
-            println "App name: " + name
-            appConfig.setName(name)
-        }
-        if (project.hasProperty("mlHost")) {
-            def host = project.property("mlHost")
-            println "App host: " + host
-            appConfig.setHost(host)
-        }
-        if (project.hasProperty("mlUsername")) {
-            def username = project.property("mlUsername")
-            println "App username: " + username
-            appConfig.setUsername(username)
-        }
-        if (project.hasProperty("mlPassword")) {
-            appConfig.setPassword(project.property("mlPassword"))
-        }
-        if (project.hasProperty("mlRestPort")) {
-            def port = project.property("mlRestPort")
-            println "App REST port: " + port
-            appConfig.setRestPort(Integer.parseInt(port))
-        }
-        if (project.hasProperty("mlXdbcPort")) {
-            def port = project.property("mlXdbcPort")
-            println "App XDBC port: " + port
-            appConfig.setXdbcPort(Integer.parseInt(port))
-        }
-        project.extensions.add("mlAppConfig", appConfig)
-
+        initializeAppConfig(project)
+        initializeManageConfig(project)
+        
         project.getConfigurations().create("mlRestApi")
 
         String group = "MarkLogic"
@@ -88,7 +44,10 @@ class MarkLogicPlugin implements Plugin<Project> {
 
         project.task("mlConfigureApp", type: ConfigureAppTask, group: group, dependsOn: "mlPrepareRestApiDependencies")
 
-        project.task("mlDeploy", type: ConfigureAppTask, group: group, dependsOn: ["mlDeleteLastConfigured", "mlInstallApp"])
+        project.task("mlDeploy", type: ConfigureAppTask, group: group, dependsOn: [
+            "mlDeleteLastConfigured",
+            "mlInstallApp"
+        ])
 
         project.task("mlCreateResource", type: CreateResourceTask, group: group)
 
@@ -96,5 +55,70 @@ class MarkLogicPlugin implements Plugin<Project> {
         project.task("mlBitemporalConfigure", type: ConfigureBitemporalTask, group: group)
 
         project.task("mlWatch", type: WatchTask, group: group)
+    }
+
+    void initializeAppConfig(Project project) {
+        AppConfig appConfig = new AppConfig()
+        
+        if (project.hasProperty("mlAppName")) {
+            def name = project.property("mlAppName")
+            println "App name: " + name
+            appConfig.setName(name)
+        }
+        if (project.hasProperty("mlHost")) {
+            def host = project.property("mlHost")
+            println "App host: " + host
+            appConfig.setHost(host)
+        }
+        if (project.hasProperty("mlUsername")) {
+            def username = project.property("mlUsername")
+            println "App username: " + username
+            appConfig.setUsername(username)
+        }
+        if (project.hasProperty("mlPassword")) {
+            appConfig.setPassword(project.property("mlPassword"))
+        }
+        
+        if (project.hasProperty("mlRestPort")) {
+            def port = project.property("mlRestPort")
+            println "App REST port: " + port
+            appConfig.setRestPort(Integer.parseInt(port))
+        }
+        if (project.hasProperty("mlTestRestPort")) {
+            def port = project.property("mlTestRestPort")
+            println "App test REST port: " + port
+            appConfig.setTestRestPort(Integer.parseInt(port))
+        }
+        
+        if (project.hasProperty("mlXdbcPort")) {
+            def port = project.property("mlXdbcPort")
+            println "App XDBC port: " + port
+            appConfig.setXdbcPort(Integer.parseInt(port))
+        }
+        if (project.hasProperty("mlTestXdbcPort")) {
+            def port = project.property("mlTestXdbcPort")
+            println "App test XDBC port: " + port
+            appConfig.setTestXdbcPort(Integer.parseInt(port))
+        }
+        
+        project.extensions.add("mlAppConfig", appConfig)
+    }
+
+    void initializeManageConfig(Project project) {
+        ManageConfig manageConfig = new ManageConfig()
+        if (project.hasProperty("mlHost")) {
+            def host = project.property("mlHost")
+            println "Manage app host: " + host
+            manageConfig.setHost(host)
+        }
+        if (project.hasProperty("mlUsername")) {
+            def username = project.property("mlUsername")
+            println "Manage app username: " + username
+            manageConfig.setUsername(username)
+        }
+        if (project.hasProperty("mlPassword")) {
+            manageConfig.setPassword(project.property("mlPassword"))
+        }
+        project.extensions.add("mlManageConfig", manageConfig)
     }
 }
