@@ -9,7 +9,8 @@ subprojects {
   apply plugin: 'maven-publish'
 
   ext {
-    pubVersion = project.hasProperty("pubVersion") ? project.getProperty("pubVersion") : "0.5." + java.util.Calendar.getInstance().getTimeInMillis()
+    def timestamp = new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
+    pubVersion = project.hasProperty("pubVersion") ? project.getProperty("pubVersion") : "0.SNAPSHOT." + timestamp
   }
 
   publishing {
