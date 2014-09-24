@@ -8,17 +8,13 @@ import com.marklogic.manage.pkg.servers.HttpServerPackageMerger
 class MergeHttpServerPackagesTask extends AbstractManageTask {
 
     List<String> mergePackageFilePaths
-    String outputPath
+    String outputPath = "build/ml-gradle/merged-http-server-package.xml"
 
     @TaskAction
     void mergeHttpServerPackages() {
         if (!mergePackageFilePaths) {
             println "No mergePackageFilePaths specified, will not produce a new HTTP server package file"
             return
-        }
-
-        if (!outputPath) {
-            outputPath = getManageConfig().getHttpServerFilePath()
         }
 
         File outputFile = new File(outputPath)
@@ -29,11 +25,12 @@ class MergeHttpServerPackagesTask extends AbstractManageTask {
 
         println "Merging HTTP server package files: " + mergePackageFilePaths
         String xml = new HttpServerPackageMerger().mergeHttpServerPackages(mergePackageFilePaths)
-        println "Writing merged HTTP server package to " + outputFile.getAbsolutePath()
+        println "Writing merged HTTP server package to " + outputFile.getAbsolutePath() + "\n"
         File dir = outputFile.getParentFile()
         if (dir != null) {
             dir.mkdirs()
         }
         FileCopyUtils.copy(xml,  new FileWriter(outputFile))
+        getManageConfig().setHttpServerFilePath(outputPath)
     }
 }

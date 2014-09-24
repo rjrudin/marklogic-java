@@ -42,8 +42,12 @@ class PrepareRestApiDependenciesTask extends ClientTask {
                 newConfigPaths.addAll(configPaths)
                 getAppConfig().setConfigPaths(newConfigPaths)
                 
-                println "Finished unzipping mlRestApi dependencies; will now include modules at " + getAppConfig().configPaths
+                println "Finished unzipping mlRestApi dependencies; will now include modules at " + getAppConfig().configPaths + "\n"
+            } else {
+            println "No mlRestApi dependencies found, so no preparation of dependencies required\n"
             }
+        } else {
+            println "No mlRestApi configuration found, so no preparation of mlRestApi dependencies required\n"
         }
     }
 }

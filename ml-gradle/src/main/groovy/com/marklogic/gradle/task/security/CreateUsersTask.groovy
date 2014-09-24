@@ -35,5 +35,7 @@ class CreateUsersTask extends MarkLogicTask {
 
             xccHelper.executeXquery(xquery)
         }
+        
+        println "Finished creating users\n"
     }
 }

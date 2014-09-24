@@ -13,7 +13,7 @@ class DeleteLastConfiguredTimestampsFileTask extends DefaultTask {
     void deleteFile() {
         File f = new File(filePath)
         if (f.exists()) {
-            println "Deleting " + f.getAbsolutePath()
+            println "Deleting " + f.getAbsolutePath() + "\n"
             f.delete()
         }
     }

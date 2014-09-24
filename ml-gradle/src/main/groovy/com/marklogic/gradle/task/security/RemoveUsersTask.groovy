@@ -28,5 +28,7 @@ class RemoveUsersTask extends MarkLogicTask {
         }
         
         new XccHelper(xccUrl).executeXquery(xquery)
+        
+        println "Finished removing users\n"
     }
 }
