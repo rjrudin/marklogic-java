@@ -9,7 +9,7 @@ buildscript {
   }
   
   dependencies {
-    classpath "com.marklogic:ml-gradle:0.6.1"
+    classpath "com.marklogic:ml-gradle:0.7"
   }
 }
 
@@ -38,32 +38,10 @@ repositories {
  * code, and the latter supports writing JUnit-based tests. 
  */
 dependencies {
-  compile "com.marklogic:ml-java:0.6.1"
-  testCompile "com.marklogic:ml-junit:0.6.1"
+  compile "com.marklogic:ml-java:0.7"
+  testCompile "com.marklogic:ml-junit:0.7"
 }
 
-
-/*
- * The ext block in Gradle is where project properties can be added. Each property that has an "ml" prefix is one that 
- * the ml-gradle plugin has initialized already. Many of these are defined in the gradle.properties file that Gradle reads
- * in at the start of build execution.
- * 
- * mlAppConfig is used for defining the host/port/username/password of the application that will be installed and 
- * configured. mlManageConfig is used for defining the host/port/username/password of the REST Management API that will
- * be used for installing the application. Both default to "localhost" for the host. mlAppConfig defaults to ports 8100
- * and 8101 for REST/XDBC servers. mlManageConfig defaults to port 8002 for the Management API. Both will use the properties
- * defined in gradle.properties that start with the "ml" prefix. 
- */
-ext {
-  /*
-   * Since we'll be constructing our database and server packages by merging multiple package files together, we need
-   * to tell the ManageConfig property where to find out merged package files. 
-   */
-  mlManageConfig {
-    contentDatabaseFilePath = "build/merged-content-database.xml"
-    httpServerFilePath = "build/merged-http-server.xml"
-  }
-}
 
 /*
  * This is an example of how the database and server packages are created by merging one or more package files into a
