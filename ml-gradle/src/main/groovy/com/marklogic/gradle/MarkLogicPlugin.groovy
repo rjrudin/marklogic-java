@@ -27,6 +27,7 @@ class MarkLogicPlugin implements Plugin<Project> {
         project.getConfigurations().create("mlRestApi")
 
         String group = "MarkLogic"
+        
         project.task("mlDeleteLastConfigured", type: DeleteLastConfiguredTimestampsFileTask, group: group)
         project.task("mlUninstallApp", type: UninstallAppTask, group: group)
         project.task("mlClearModules", type: ClearModulesTask, group: group, dependsOn: "mlDeleteLastConfigured")
@@ -41,20 +42,21 @@ class MarkLogicPlugin implements Plugin<Project> {
             "mlMergeHttpServerPackages"
         ])
 
-        project.task("mlUpdateContentDatabase", type: UpdateDatabaseTask, group: group, dependsOn: "mlMergeDatabasePackages")
-        project.task("mlUpdateHttpServers", type: UpdateHttpServerTask, group: group, dependsOn: "mlMergeHttpServerPackages")
-
         project.task("mlConfigureApp", type: ConfigureAppTask, group: group, dependsOn: "mlPrepareRestApiDependencies")
         
+        project.task("mlDeploy", type: ConfigureAppTask, group: group, dependsOn: [
+            "mlDeleteLastConfigured",
+            "mlInstallApp",
+            "mlPrepareRestApiDependencies"
+        ])
+
         project.task("mlReloadModules", group: group, dependsOn: [
             "mlClearModules",
             "mlConfigureApp"
         ])
         
-        project.task("mlDeploy", type: ConfigureAppTask, group: group, dependsOn: [
-            "mlDeleteLastConfigured",
-            "mlInstallApp"
-        ])
+        project.task("mlUpdateContentDatabase", type: UpdateDatabaseTask, group: group, dependsOn: "mlMergeDatabasePackages")
+        project.task("mlUpdateHttpServers", type: UpdateHttpServerTask, group: group, dependsOn: "mlMergeHttpServerPackages")
 
         project.task("mlCreateResource", type: CreateResourceTask, group: group)
 
