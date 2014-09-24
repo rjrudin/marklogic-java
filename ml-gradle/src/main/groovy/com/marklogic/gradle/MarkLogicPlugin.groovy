@@ -5,7 +5,7 @@ import org.gradle.api.Project
 
 import com.marklogic.gradle.task.DeleteLastConfiguredTimestampsFileTask
 import com.marklogic.gradle.task.UninstallAppTask
-import com.marklogic.gradle.task.client.ConfigureAppTask
+import com.marklogic.gradle.task.client.LoadModulesTask
 import com.marklogic.gradle.task.client.PrepareRestApiDependenciesTask
 import com.marklogic.gradle.task.client.WatchTask
 import com.marklogic.gradle.task.client.service.CreateResourceTask
@@ -42,17 +42,17 @@ class MarkLogicPlugin implements Plugin<Project> {
             "mlMergeHttpServerPackages"
         ])
 
-        project.task("mlConfigureApp", type: ConfigureAppTask, group: group, dependsOn: "mlPrepareRestApiDependencies")
+        project.task("mlLoadModules", type: LoadModulesTask, group: group, dependsOn: "mlPrepareRestApiDependencies")
         
-        project.task("mlDeploy", type: ConfigureAppTask, group: group, dependsOn: [
+        project.task("mlDeploy", group: group, dependsOn: [
             "mlDeleteLastConfigured",
             "mlInstallApp",
-            "mlPrepareRestApiDependencies"
+            "mlLoadModules"
         ])
 
         project.task("mlReloadModules", group: group, dependsOn: [
             "mlClearModules",
-            "mlConfigureApp"
+            "mlLoadModules"
         ])
         
         project.task("mlUpdateContentDatabase", type: UpdateDatabaseTask, group: group, dependsOn: "mlMergeDatabasePackages")
@@ -60,8 +60,7 @@ class MarkLogicPlugin implements Plugin<Project> {
 
         project.task("mlCreateResource", type: CreateResourceTask, group: group)
 
-        // Not naming this "mlConfigureBitemporal" so that "mlconf" can still be used for "mlConfigureApp"
-        project.task("mlBitemporalConfigure", type: ConfigureBitemporalTask, group: group)
+        project.task("mlConfigureBitemporal", type: ConfigureBitemporalTask, group: group)
 
         project.task("mlWatch", type: WatchTask, group: group)
     }
