@@ -19,6 +19,8 @@ class ConfigureAppTask extends ClientTask {
                 println "Installing configuration found at ${dir}"
                 configurer.configure(new File(dir))
             }
+            
+            println "Finished configuring application\n"
         } finally {
             client.release()
         }

@@ -72,6 +72,6 @@ class InstallAppTask extends AbstractManageTask {
         }
 
         rh.installPackage(packageName, format)
-        println "Successfully completed setup of application ${appName}"
+        println "Finished installing application ${appName}"
     }
 }
