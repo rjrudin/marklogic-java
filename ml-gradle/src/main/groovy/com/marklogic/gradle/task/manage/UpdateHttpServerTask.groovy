@@ -24,6 +24,6 @@ class UpdateHttpServerTask extends AbstractManageTask {
         }
         rh.installPackage(packageName, format)
         
-        println "Successfully updated HTTP servers in package " + packageName
+        println "Finished updating HTTP servers in package " + packageName + "\n"
     }
 }

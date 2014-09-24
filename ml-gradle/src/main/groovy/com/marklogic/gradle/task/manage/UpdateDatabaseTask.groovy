@@ -18,6 +18,6 @@ class UpdateDatabaseTask extends AbstractManageTask {
         RestHelper rh = newRestHelper()
         List<String> names = mgr.addContentDatabasesToPackage(rh, path, isTestPortSet(), format)
         rh.installPackage(mgr.getPackageName(), format)
-        println "Successfully updated database " + names + " in package " + mgr.getPackageName()
+        println "Finished updating database " + names + " in package " + mgr.getPackageName() + "\n"
     }
 }
