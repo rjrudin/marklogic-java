@@ -23,14 +23,14 @@ class MarkLogicPlugin implements Plugin<Project> {
     void apply(Project project) {
         initializeAppConfig(project)
         initializeManageConfig(project)
-        
+
         project.getConfigurations().create("mlRestApi")
 
         String group = "MarkLogic"
         project.task("mlDeleteLastConfigured", type: DeleteLastConfiguredTimestampsFileTask, group: group)
         project.task("mlUninstallApp", type: UninstallAppTask, group: group)
-        project.task("mlClearModules", type: ClearModulesTask, group: group)
-        
+        project.task("mlClearModules", type: ClearModulesTask, group: group, dependsOn: "mlDeleteLastConfigured")
+
         project.task("mlPrepareRestApiDependencies", type: PrepareRestApiDependenciesTask, group: group, dependsOn: project.configurations["mlRestApi"])
 
         project.task("mlMergeDatabasePackages", type: MergeDatabasePackagesTask, group: group, dependsOn:"mlPrepareRestApiDependencies")
@@ -45,7 +45,12 @@ class MarkLogicPlugin implements Plugin<Project> {
         project.task("mlUpdateHttpServers", type: UpdateHttpServerTask, group: group, dependsOn: "mlMergeHttpServerPackages")
 
         project.task("mlConfigureApp", type: ConfigureAppTask, group: group, dependsOn: "mlPrepareRestApiDependencies")
-
+        
+        project.task("mlReloadModules", group: group, dependsOn: [
+            "mlClearModules",
+            "mlConfigureApp"
+        ])
+        
         project.task("mlDeploy", type: ConfigureAppTask, group: group, dependsOn: [
             "mlDeleteLastConfigured",
             "mlInstallApp"
@@ -61,7 +66,7 @@ class MarkLogicPlugin implements Plugin<Project> {
 
     void initializeAppConfig(Project project) {
         AppConfig appConfig = new AppConfig()
-        
+
         if (project.hasProperty("mlAppName")) {
             def name = project.property("mlAppName")
             println "App name: " + name
@@ -80,7 +85,7 @@ class MarkLogicPlugin implements Plugin<Project> {
         if (project.hasProperty("mlPassword")) {
             appConfig.setPassword(project.property("mlPassword"))
         }
-        
+
         if (project.hasProperty("mlRestPort")) {
             def port = project.property("mlRestPort")
             println "App REST port: " + port
@@ -91,7 +96,7 @@ class MarkLogicPlugin implements Plugin<Project> {
             println "App test REST port: " + port
             appConfig.setTestRestPort(Integer.parseInt(port))
         }
-        
+
         if (project.hasProperty("mlXdbcPort")) {
             def port = project.property("mlXdbcPort")
             println "App XDBC port: " + port
@@ -102,7 +107,7 @@ class MarkLogicPlugin implements Plugin<Project> {
             println "App test XDBC port: " + port
             appConfig.setTestXdbcPort(Integer.parseInt(port))
         }
-        
+
         project.extensions.add("mlAppConfig", appConfig)
     }
 
