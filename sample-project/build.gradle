@@ -9,7 +9,7 @@ buildscript {
   }
   
   dependencies {
-    classpath "com.marklogic:ml-gradle:0.5"
+    classpath "com.marklogic:ml-gradle:0.6.1"
   }
 }
 
@@ -39,8 +39,8 @@ repositories {
  * code, and the latter supports writing JUnit-based tests. 
  */
 dependencies {
-  compile "com.marklogic:ml-java:0.5"
-  testCompile "com.marklogic:ml-junit:0.5"
+  compile "com.marklogic:ml-java:0.6.1"
+  testCompile "com.marklogic:ml-junit:0.6.1"
 }
 
 
