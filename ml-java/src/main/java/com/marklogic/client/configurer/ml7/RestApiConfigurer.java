@@ -91,7 +91,7 @@ public class RestApiConfigurer extends LoggingObject {
      */
     protected Format determineFormat(File file) {
         String name = file.getName();
-        if (name.endsWith(".xml") || name.endsWith(".xsl") || name.endsWith(".html")) {
+        if (FilenameUtil.isXslFile(name) || name.endsWith(".xml") || name.endsWith(".html")) {
             return Format.XML;
         } else if (name.endsWith(".swf") || name.endsWith(".jpeg") || name.endsWith(".jpg") || name.endsWith(".png")
                 || name.endsWith(".gif") || name.endsWith(".svg") || name.endsWith(".ttf") || name.endsWith(".eot")

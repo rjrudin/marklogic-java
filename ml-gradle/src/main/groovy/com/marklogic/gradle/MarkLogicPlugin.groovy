@@ -8,6 +8,7 @@ import com.marklogic.gradle.task.UninstallAppTask
 import com.marklogic.gradle.task.client.LoadModulesTask
 import com.marklogic.gradle.task.client.PrepareRestApiDependenciesTask
 import com.marklogic.gradle.task.client.WatchTask
+import com.marklogic.gradle.task.client.config.CreateTransformTask;
 import com.marklogic.gradle.task.client.service.CreateResourceTask
 import com.marklogic.gradle.task.database.ClearModulesTask;
 import com.marklogic.gradle.task.manage.ConfigureBitemporalTask
@@ -59,7 +60,8 @@ class MarkLogicPlugin implements Plugin<Project> {
         project.task("mlUpdateHttpServers", type: UpdateHttpServerTask, group: group, dependsOn: "mlMergeHttpServerPackages")
 
         project.task("mlCreateResource", type: CreateResourceTask, group: group)
-
+        project.task("mlCreateTransform", type: CreateTransformTask, group: group)
+        
         project.task("mlConfigureBitemporal", type: ConfigureBitemporalTask, group: group)
 
         project.task("mlWatch", type: WatchTask, group: group)
