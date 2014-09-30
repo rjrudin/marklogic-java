@@ -46,7 +46,7 @@ class MarkLogicPlugin implements Plugin<Project> {
         project.task("mlLoadModules", type: LoadModulesTask, group: group, dependsOn: "mlPrepareRestApiDependencies")
         
         project.task("mlDeploy", group: group, dependsOn: [
-            "mlDeleteLastConfigured",
+            "mlClearModules",
             "mlInstallApp",
             "mlLoadModules"
         ])

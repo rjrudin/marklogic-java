@@ -11,13 +11,13 @@ class XccHelper {
     String uri
     ContentSource contentSource
     boolean printXquery = false
-        
+
     XccHelper(String uri) {
         this.uri = uri
         println "Connecting to XDBC server at ${uri}"
         this.contentSource = ContentSourceFactory.newContentSource(new URI(uri))
     }
-    
+
     String executeXquery(String xquery) {
         Session session = contentSource.newSession()
         try {
@@ -26,8 +26,6 @@ class XccHelper {
             }
             AdhocQuery q = session.newAdhocQuery(xquery)
             return session.submitRequest(q).asString()
-        } catch (RequestException re) {
-            throw new RuntimeException(re) 
         } finally {
             session.close()
         }
