@@ -9,10 +9,10 @@ import java.util.logging.Logger
 import org.gradle.api.tasks.TaskAction
 
 import com.marklogic.gradle.task.client.ClientTask
-import com.marklogic.gradle.task.manage.AbstractManageTask;
+import com.marklogic.gradle.task.manage.ManageTask;
 import com.marklogic.gradle.xcc.XccHelper
 
-class ClearModulesTask extends AbstractManageTask {
+class ClearModulesTask extends ManageTask {
 
     String[] excludes
 

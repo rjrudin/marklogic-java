@@ -7,7 +7,7 @@ import org.springframework.util.FileCopyUtils
 
 import com.marklogic.manage.pkg.databases.DatabasePackageMerger;
 
-class MergeDatabasePackagesTask extends AbstractManageTask {
+class MergeDatabasePackagesTask extends ManageTask {
     
     List<String> mergePackageFilePaths
     String outputPath = "build/ml-gradle/merged-content-database-package.xml"

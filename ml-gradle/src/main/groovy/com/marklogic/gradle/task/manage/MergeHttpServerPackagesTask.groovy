@@ -5,7 +5,7 @@ import org.springframework.util.FileCopyUtils
 
 import com.marklogic.manage.pkg.servers.HttpServerPackageMerger
 
-class MergeHttpServerPackagesTask extends AbstractManageTask {
+class MergeHttpServerPackagesTask extends ManageTask {
 
     List<String> mergePackageFilePaths
     String outputPath = "build/ml-gradle/merged-http-server-package.xml"

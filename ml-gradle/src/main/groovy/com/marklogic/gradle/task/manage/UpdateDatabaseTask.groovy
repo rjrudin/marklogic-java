@@ -4,7 +4,7 @@ import org.gradle.api.tasks.TaskAction
 
 import com.marklogic.gradle.RestHelper
 
-class UpdateDatabaseTask extends AbstractManageTask {
+class UpdateDatabaseTask extends ManageTask {
 
     String format = "json"
     

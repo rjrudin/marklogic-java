@@ -4,7 +4,7 @@ import org.gradle.api.tasks.TaskAction;
 
 import com.marklogic.gradle.RestHelper;
 
-class UpdateHttpServerTask extends AbstractManageTask {
+class UpdateHttpServerTask extends ManageTask {
 
     String groupName = "Default"
     String format = "json"

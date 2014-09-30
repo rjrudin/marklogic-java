@@ -10,7 +10,7 @@ import com.marklogic.gradle.RestHelper
  * This task should just collect task inputs to configure those Java classes, which will then handle installing an
  * application. DatabasePackageManager is the first step in moving code out.
  */
-class InstallAppTask extends AbstractManageTask {
+class InstallAppTask extends ManageTask {
 
     String groupName = "Default"
     String triggersDatabaseFilePath = "src/main/xqy/packages/triggers-database.xml"
