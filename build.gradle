@@ -21,16 +21,16 @@ subprojects {
         version pubVersion
         from components.java
       }
-      repositories {
-        maven {
-          if (project.hasProperty("nexusPublish")) {
-            url "file:///usr/local/sonatype-work/nexus/storage/snapshots"
-          } else if (project.hasProperty("release")) {
-            url "file://$projectDir/../../gh-pages-marklogic-java/releases"
-          }
-          else {
-            url mavenLocal().url
-          }
+    }
+    repositories {
+      maven {
+        if (project.hasProperty("nexusPublish")) {
+          url "file:///usr/local/sonatype-work/nexus/storage/snapshots"
+        } else if (project.hasProperty("release")) {
+          url "file://$projectDir/../../gh-pages-marklogic-java/releases"
+        }
+        else {
+          url mavenLocal().url
         }
       }
     }
