@@ -3,6 +3,7 @@ package com.marklogic.test.spring;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,10 @@ public class ConfigurerTestExecutionListener extends AbstractTestExecutionListen
                     if (logger.isInfoEnabled()) {
                         logger.info(String.format("Configuring application, using base directory of %s", baseDir));
                     }
-                    new RestApiConfigurer(client).configure(new File(baseDir));
+                    Set<File> loadedModules = new RestApiConfigurer(client).loadModules(new File(baseDir));
+                    if (loadedModules != null) {
+                        testContext.getApplicationContext().publishEvent(new ModulesLoadedEvent(loadedModules));
+                    }
                 }
                 initialized = true;
             }

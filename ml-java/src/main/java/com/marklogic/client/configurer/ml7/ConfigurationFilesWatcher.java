@@ -47,7 +47,7 @@ public class ConfigurationFilesWatcher {
                 logger.trace("Auto-installing any modified files");
             }
             for (File dir : dirs) {
-                configurer.configure(dir);
+                configurer.loadModules(dir);
             }
             Thread.sleep(1000);
         }

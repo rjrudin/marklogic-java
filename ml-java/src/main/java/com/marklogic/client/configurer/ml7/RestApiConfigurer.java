@@ -2,6 +2,8 @@ package com.marklogic.client.configurer.ml7;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.FailedRequestException;
@@ -39,34 +41,50 @@ public class RestApiConfigurer extends LoggingObject {
         this.configurationFilesManager = new PropertiesConfigurationFilesManager();
     }
 
-    public void configure(File baseDir) {
+    public Set<File> loadModules(File baseDir) {
         configurationFilesManager.initialize();
 
         ConfigurationFiles files = configurationFilesFinder.findConfigurationFiles(baseDir);
 
+        Set<File> loadedModules = new HashSet<>();
+        
         for (Asset asset : files.getAssets()) {
-            installAsset(asset);
+            File f = installAsset(asset);
+            if (f != null) {
+                loadedModules.add(f);
+            }
         }
 
         for (File f : files.getOptions()) {
-            installQueryOptions(f);
+            f = installQueryOptions(f);
+            if (f != null) {
+                loadedModules.add(f);
+            }
         }
 
         for (File f : files.getTransforms()) {
             // TODO Provide configurable support for metadata for a transform
-            installTransform(f, new ExtensionMetadata());
+            f = installTransform(f, new ExtensionMetadata());
+            if (f != null) {
+                loadedModules.add(f);
+            }
         }
 
         for (File f : files.getServices()) {
             ExtensionMetadataAndParams emap = extensionMetadataProvider.provideExtensionMetadataAndParams(f);
-            installResource(f, emap.metadata, emap.methods.toArray(new MethodParameters[] {}));
+            f = installResource(f, emap.metadata, emap.methods.toArray(new MethodParameters[] {}));
+            if (f != null) {
+                loadedModules.add(f);
+            }
         }
+        
+        return loadedModules;
     }
 
-    public void installAsset(Asset asset) {
+    public File installAsset(Asset asset) {
         File file = asset.getFile();
         if (!configurationFilesManager.hasFileBeenModifiedSinceLastInstalled(file)) {
-            return;
+            return null;
         }
         ExtensionLibrariesManager libMgr = client.newServerConfigManager().newExtensionLibrariesManager();
         Format format = determineFormat(file);
@@ -80,6 +98,7 @@ public class RestApiConfigurer extends LoggingObject {
             libMgr.write(path, h.withFormat(Format.BINARY));
         }
         configurationFilesManager.saveLastInstalledTimestamp(file, new Date());
+        return file;
     }
 
     /**
@@ -101,9 +120,9 @@ public class RestApiConfigurer extends LoggingObject {
         return Format.TEXT;
     }
 
-    public void installResource(File file, ExtensionMetadata metadata, MethodParameters... methodParams) {
+    public File installResource(File file, ExtensionMetadata metadata, MethodParameters... methodParams) {
         if (!configurationFilesManager.hasFileBeenModifiedSinceLastInstalled(file)) {
-            return;
+            return null;
         }
         ResourceExtensionsManager extMgr = client.newServerConfigManager().newResourceExtensionsManager();
         String resourceName = getExtensionNameFromFile(file);
@@ -114,14 +133,15 @@ public class RestApiConfigurer extends LoggingObject {
         try {
             extMgr.writeServices(resourceName, new FileHandle(file), metadata, methodParams);
             configurationFilesManager.saveLastInstalledTimestamp(file, new Date());
+            return file;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void installTransform(File file, ExtensionMetadata metadata) {
+    public File installTransform(File file, ExtensionMetadata metadata) {
         if (!configurationFilesManager.hasFileBeenModifiedSinceLastInstalled(file)) {
-            return;
+            return null;
         }
         TransformExtensionsManager mgr = client.newServerConfigManager().newTransformExtensionsManager();
         String transformName = getExtensionNameFromFile(file);
@@ -133,20 +153,22 @@ public class RestApiConfigurer extends LoggingObject {
                 mgr.writeXQueryTransform(transformName, new FileHandle(file), metadata);
             }
             configurationFilesManager.saveLastInstalledTimestamp(file, new Date());
+            return file;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void installQueryOptions(File f) {
+    public File installQueryOptions(File f) {
         if (!configurationFilesManager.hasFileBeenModifiedSinceLastInstalled(f)) {
-            return;
+            return null;
         }
         String name = getExtensionNameFromFile(f);
         logger.info(String.format("Installing %s query options from file %s", name, f.getName()));
         QueryOptionsManager mgr = client.newServerConfigManager().newQueryOptionsManager();
         mgr.writeOptions(name, new FileHandle(f));
         configurationFilesManager.saveLastInstalledTimestamp(f, new Date());
+        return f;
     }
 
     protected String getExtensionNameFromFile(File file) {

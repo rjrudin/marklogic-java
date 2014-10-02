@@ -17,7 +17,7 @@ class LoadModulesTask extends ClientTask {
             for (int i = 0; i < directories.size(); i++) {
                 String dir = directories.get(i);
                 println "Loading modules found at ${dir}"
-                configurer.configure(new File(dir))
+                configurer.loadModules(new File(dir))
             }
             
             println "Finished loading modules\n"
