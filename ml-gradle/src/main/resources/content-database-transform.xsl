@@ -78,6 +78,16 @@
     </xsl:copy>
   </xsl:template>
 
+  <xsl:template match="db:links">
+    <xsl:copy>
+      <xsl:copy-of select="attribute::*" />
+      <xsl:apply-templates />
+      <xsl:if test="not(db:triggers-database)">
+        <xsl:copy-of select="$mergePackage/db:config/db:links/db:triggers-database" />
+      </xsl:if>
+    </xsl:copy>
+  </xsl:template>
+
   <xsl:template match="db:links/node()[text()]">
     <xsl:variable name="nodeName" select="name(.)" />
     <xsl:variable name="mergeNode" select="$mergePackage/db:config/db:links/node()[name(.) = $nodeName]" />

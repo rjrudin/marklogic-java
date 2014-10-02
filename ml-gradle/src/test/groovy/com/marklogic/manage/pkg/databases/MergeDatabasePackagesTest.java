@@ -16,7 +16,7 @@ public class MergeDatabasePackagesTest extends XmlHelper {
     private DatabasePackageMerger sut = new DatabasePackageMerger();
 
     @Test
-    public void addRangeIndex() {
+    public void mergePackages() {
         List<String> mergeFilePaths = new ArrayList<>();
         mergeFilePaths.add("src/test/resources/test-content-database.xml");
         mergeFilePaths.add("src/test/resources/test-content-database2.xml");
@@ -38,6 +38,7 @@ public class MergeDatabasePackagesTest extends XmlHelper {
 
         db.assertElementExists("/db:package-database/db:config/db:links/db:schema-database[. = 'my-schemas-database']");
         db.assertElementExists("/db:package-database/db:config/db:links/db:security-database[. = 'my-security-database']");
+        db.assertElementExists("/db:package-database/db:config/db:links/db:triggers-database[. = 'my-triggers-database']");
 
         db.assertElementExists("/db:package-database/db:config/db:package-database-properties/db:word-lexicons/db:word-lexicon[. = 'http://marklogic.com/collation/']");
         // db.prettyPrint();

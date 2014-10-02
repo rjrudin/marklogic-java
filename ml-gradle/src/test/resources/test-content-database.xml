@@ -26,6 +26,7 @@
     </package-database-properties>
     <links>
       <schema-database>my-schemas-database</schema-database>
+      <triggers-database>my-triggers-database</triggers-database>
     </links>
   </config>
 </package-database>
