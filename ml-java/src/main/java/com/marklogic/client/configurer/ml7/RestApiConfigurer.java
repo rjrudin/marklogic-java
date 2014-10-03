@@ -63,8 +63,8 @@ public class RestApiConfigurer extends LoggingObject {
         }
 
         for (File f : files.getTransforms()) {
-            // TODO Provide configurable support for metadata for a transform
-            f = installTransform(f, new ExtensionMetadata());
+            ExtensionMetadataAndParams emap = extensionMetadataProvider.provideExtensionMetadataAndParams(f);
+            f = installTransform(f, emap.metadata);
             if (f != null) {
                 loadedModules.add(f);
             }

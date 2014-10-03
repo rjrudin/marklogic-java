@@ -2,6 +2,7 @@ package com.marklogic.client.configurer.metadata;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.jdom2.Element;
@@ -18,7 +19,7 @@ public class XmlExtensionMetadataProvider extends LoggingObject implements Exten
     @Override
     public ExtensionMetadataAndParams provideExtensionMetadataAndParams(File resourceFile) {
         File metadataDir = new File(resourceFile.getParent(), "metadata");
-        File metadataFile = new File(metadataDir, resourceFile.getName().replaceAll("xqy", "xml"));
+        File metadataFile = new File(metadataDir, getFilenameMinusExtension(resourceFile) + ".xml");
 
         ExtensionMetadata m = new ExtensionMetadata();
         List<MethodParameters> paramList = new ArrayList<>();
@@ -57,7 +58,18 @@ public class XmlExtensionMetadataProvider extends LoggingObject implements Exten
         return new ExtensionMetadataAndParams(m, paramList);
     }
 
+    protected String getFilenameMinusExtension(File file) {
+        // Would think there's an easier way to do this in Java...
+        String[] tokens = file.getName().split("\\.");
+        tokens = Arrays.copyOfRange(tokens, 0, tokens.length - 1);
+        String filename = tokens[0];
+        for (int i = 1; i < tokens.length; i++) {
+            filename += "." + tokens[i];
+        }
+        return filename;
+    }
+
     private void setDefaults(ExtensionMetadata metadata, File resourceFile) {
-        metadata.setTitle(resourceFile.getName().replaceAll(".xqy", ""));
+        metadata.setTitle(getFilenameMinusExtension(resourceFile));
     }
 }
