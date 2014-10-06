@@ -62,6 +62,14 @@
     </xsl:copy>
   </xsl:template>
 
+  <xsl:template match="db:range-field-indexes">
+    <xsl:copy>
+      <xsl:apply-templates />
+      <xsl:apply-templates
+        select="$mergePackage/db:config/db:package-database-properties/db:range-field-indexes/db:range-field-index" />
+    </xsl:copy>
+  </xsl:template>
+
   <xsl:template match="db:geospatial-element-indexes">
     <xsl:copy>
       <xsl:apply-templates />

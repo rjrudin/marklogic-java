@@ -14,6 +14,27 @@
           <invalid-values>reject</invalid-values>
         </range-element-index>
       </range-element-indexes>
+      <range-field-indexes>
+        <range-field-index>
+          <scalar-type>string</scalar-type>
+          <field-name>secondField</field-name>
+          <collation />
+          <range-value-positions>false</range-value-positions>
+          <invalid-values>ignore</invalid-values>
+        </range-field-index>
+      </range-field-indexes>
+      <fields>
+        <field>
+          <field-name>secondField</field-name>
+          <field-path>
+            <path>/some/other/element</path>
+            <weight>1</weight>
+          </field-path>
+          <word-lexicons />
+          <included-elements />
+          <excluded-elements />
+        </field>
+      </fields>
     </package-database-properties>
     <links>
       <security-database>my-security-database</security-database>
