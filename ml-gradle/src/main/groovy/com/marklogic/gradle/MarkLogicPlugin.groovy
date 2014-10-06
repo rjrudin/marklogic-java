@@ -10,6 +10,7 @@ import com.marklogic.gradle.task.client.PrepareRestApiDependenciesTask
 import com.marklogic.gradle.task.client.WatchTask
 import com.marklogic.gradle.task.client.config.CreateTransformTask;
 import com.marklogic.gradle.task.client.service.CreateResourceTask
+import com.marklogic.gradle.task.database.ClearContentDatabaseTask;
 import com.marklogic.gradle.task.database.ClearModulesTask;
 import com.marklogic.gradle.task.manage.ConfigureBitemporalTask
 import com.marklogic.gradle.task.manage.InstallAppTask
@@ -31,8 +32,10 @@ class MarkLogicPlugin implements Plugin<Project> {
         
         project.task("mlDeleteLastConfigured", type: DeleteLastConfiguredTimestampsFileTask, group: group)
         project.task("mlUninstallApp", type: UninstallAppTask, group: group)
+        
+        project.task("mlClearContentDatabase", type: ClearContentDatabaseTask, group: group)
         project.task("mlClearModules", type: ClearModulesTask, group: group, dependsOn: "mlDeleteLastConfigured")
-
+        
         project.task("mlPrepareRestApiDependencies", type: PrepareRestApiDependenciesTask, group: group, dependsOn: project.configurations["mlRestApi"])
 
         project.task("mlMergeDatabasePackages", type: MergeDatabasePackagesTask, group: group, dependsOn:"mlPrepareRestApiDependencies")

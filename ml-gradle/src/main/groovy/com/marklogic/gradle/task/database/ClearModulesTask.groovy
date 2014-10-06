@@ -1,35 +1,22 @@
 package com.marklogic.gradle.task.database
 
-import groovyx.net.http.HttpResponseDecorator;
-
-import java.util.logging.Level
-import java.util.logging.LogManager
-import java.util.logging.Logger
+import groovyx.net.http.HttpResponseDecorator
 
 import org.gradle.api.tasks.TaskAction
 
-import com.marklogic.gradle.task.client.ClientTask
-import com.marklogic.gradle.task.manage.ManageTask;
+import com.marklogic.gradle.task.manage.ManageTask
 import com.marklogic.gradle.xcc.XccHelper
 
 class ClearModulesTask extends ManageTask {
 
     String[] excludes
 
-    // Used to check for existence of the XDBC server
-    String groupId = "Default"
-
     /**
      * Should be able to optimize this when no excludes exist by clearing the forests belonging to the modules database.
      */
     @TaskAction
     void clearModules() {
-        // Only try this if the XDBC server exists. If it doesn't, then we're probably doing a fresh install, so there's
-        // no need to go any further.
-        try {
-            println "Checking to see if XDBC server exists..."
-            invoke(getProject(), "GET", "/manage/v2/servers/" + getAppConfig().getName() + "-content-xdbc?group-id=" + groupId)
-        } catch (Exception e) {
+        if (!xdbcServerExists()) {
             println "No XDBC server exists yet, so not clearing modules\n"
             return
         }

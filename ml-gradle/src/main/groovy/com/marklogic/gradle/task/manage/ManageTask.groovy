@@ -9,6 +9,9 @@ import com.marklogic.gradle.RestHelper
 
 class ManageTask extends MarkLogicTask {
 
+    // Used to check for existence of the XDBC server
+    String groupId = "Default"
+
     ManageConfig getManageConfig() {
         getProject().property("mlManageConfig")
     }
@@ -28,5 +31,15 @@ class ManageTask extends MarkLogicTask {
 
     HttpResponseDecorator invoke(Project project, String method, String path) {
         return newRestHelper().invoke(method, path)
+    }
+    
+    boolean xdbcServerExists() {
+        try {
+            println "Checking to see if XDBC server exists..."
+            invoke(getProject(), "GET", "/manage/v2/servers/" + getAppConfig().getName() + "-content-xdbc?group-id=" + groupId)
+            return true
+        } catch (Exception e) {
+            return false
+        }
     }
 }
