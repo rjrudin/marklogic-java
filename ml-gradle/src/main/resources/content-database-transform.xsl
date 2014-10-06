@@ -70,6 +70,14 @@
     </xsl:copy>
   </xsl:template>
 
+  <xsl:template match="/db:package-database/db:config/db:package-database-properties/db:fields">
+    <xsl:copy>
+      <xsl:apply-templates />
+      <xsl:apply-templates
+        select="$mergePackage/db:config/db:package-database-properties/db:fields/db:field" />
+    </xsl:copy>
+  </xsl:template>
+
   <xsl:template match="db:geospatial-element-indexes">
     <xsl:copy>
       <xsl:apply-templates />
