@@ -13,6 +13,8 @@ class MlcpTask extends JavaExec {
     String command
     String input_file_path
     String input_file_type
+    String input_compressed
+    String document_type
     String output_collections
     String delimited_root_name
     String delimited_uri_id
@@ -21,7 +23,8 @@ class MlcpTask extends JavaExec {
     String output_uri_prefix
     String transform_module
     String transform_namespace
-
+    String thread_count
+    
     @TaskAction
     @Override
     public void exec() {
@@ -44,6 +47,14 @@ class MlcpTask extends JavaExec {
         if (input_file_type) {
             newArgs.add("-input_file_type")
             newArgs.add(input_file_type)
+        }
+        if (input_compressed) {
+            newArgs.add("-input_compressed")
+            newArgs.add(input_compressed)
+        }
+        if (document_type) {
+            newArgs.add("-document_type")
+            newArgs.add(document_type)
         }
         if (output_collections) {
             newArgs.add("-output_collections")
@@ -77,6 +88,11 @@ class MlcpTask extends JavaExec {
             newArgs.add("-transform_namespace")
             newArgs.add(transform_namespace)
         }
+        if (thread_count) {
+            newArgs.add("-thread_count")
+            newArgs.add(thread_count)
+        }
+        
         newArgs.addAll(getArgs())
         
         println "mlcp arguments, excluding password: " + newArgs
