@@ -62,7 +62,7 @@ class XdbcServerTemplate {
       <schemas/>
       <namespaces/>
       <request-blackouts/>
-      <collation>http://marklogic.com/collation/</collation>
+      <collation>http://marklogic.com/collation/codepoint</collation>
       <ssl-certificate-template>0</ssl-certificate-template>
       <ssl-allow-sslv3>true</ssl-allow-sslv3>
       <ssl-allow-tls>true</ssl-allow-tls>

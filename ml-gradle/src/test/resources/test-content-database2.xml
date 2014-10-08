@@ -2,7 +2,7 @@
   <config>
     <package-database-properties>
       <word-lexicons>
-        <word-lexicon>http://marklogic.com/collation/</word-lexicon>
+        <word-lexicon>http://marklogic.com/collation/codepoint</word-lexicon>
       </word-lexicons>
       <range-element-indexes>
         <range-element-index>

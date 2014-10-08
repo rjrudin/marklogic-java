@@ -40,7 +40,7 @@ public class MergeDatabasePackagesTest extends XmlHelper {
         db.assertElementExists("/db:package-database/db:config/db:links/db:security-database[. = 'my-security-database']");
         db.assertElementExists("/db:package-database/db:config/db:links/db:triggers-database[. = 'my-triggers-database']");
 
-        db.assertElementExists("/db:package-database/db:config/db:package-database-properties/db:word-lexicons/db:word-lexicon[. = 'http://marklogic.com/collation/']");
+        db.assertElementExists("/db:package-database/db:config/db:package-database-properties/db:word-lexicons/db:word-lexicon[. = 'http://marklogic.com/collation/codepoint']");
 
         db.assertElementExists("//db:range-field-indexes/db:range-field-index[db:scalar-type = 'int' and db:field-name = 'intField']");
         db.assertElementExists("//db:fields/db:field[db:field-name = 'intField' and db:field-path[db:path = '/some/int/element' and db:weight = '1']]");

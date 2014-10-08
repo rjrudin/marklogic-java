@@ -61,7 +61,7 @@
       <schemas />
       <namespaces />
       <request-blackouts />
-      <collation>http://marklogic.com/collation/</collation>
+      <collation>http://marklogic.com/collation/codepoint</collation>
       <error-handler />
       <url-rewriter />
       <rewrite-resolves-globally>true</rewrite-resolves-globally>
