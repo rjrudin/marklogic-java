@@ -197,7 +197,7 @@ public class RestApiModulesLoader extends LoggingObject {
         NamespacesManager mgr = client.newServerConfigManager().newNamespacesManager();
         String existingUri = mgr.readPrefix(prefix);
         if (existingUri != null) {
-            logger.info("Deleting namespace with prefix of %s and URI of %s", prefix, existingUri);
+            logger.info(String.format("Deleting namespace with prefix of %s and URI of %s", prefix, existingUri));
             mgr.deletePrefix(prefix);
         }
         logger.info(String.format("Adding namespace with prefix of %s and URI of %s", prefix, namespaceUri));
