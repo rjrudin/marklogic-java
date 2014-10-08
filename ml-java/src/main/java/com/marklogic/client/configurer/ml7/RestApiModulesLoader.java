@@ -14,12 +14,12 @@ import com.marklogic.client.admin.ResourceExtensionsManager;
 import com.marklogic.client.admin.ResourceExtensionsManager.MethodParameters;
 import com.marklogic.client.admin.TransformExtensionsManager;
 import com.marklogic.client.configurer.Asset;
-import com.marklogic.client.configurer.ConfigurationFiles;
-import com.marklogic.client.configurer.ConfigurationFilesFinder;
-import com.marklogic.client.configurer.ConfigurationFilesManager;
-import com.marklogic.client.configurer.DefaultConfigurationFilesFinder;
+import com.marklogic.client.configurer.Modules;
+import com.marklogic.client.configurer.ModulesFinder;
+import com.marklogic.client.configurer.ModulesManager;
+import com.marklogic.client.configurer.DefaultModulesFinder;
 import com.marklogic.client.configurer.FilenameUtil;
-import com.marklogic.client.configurer.PropertiesConfigurationFilesManager;
+import com.marklogic.client.configurer.PropertiesModuleManager;
 import com.marklogic.client.configurer.metadata.ExtensionMetadataAndParams;
 import com.marklogic.client.configurer.metadata.ExtensionMetadataProvider;
 import com.marklogic.client.configurer.metadata.XmlExtensionMetadataProvider;
@@ -31,20 +31,20 @@ public class RestApiModulesLoader extends LoggingObject {
 
     private DatabaseClient client;
     private ExtensionMetadataProvider extensionMetadataProvider;
-    private ConfigurationFilesFinder configurationFilesFinder;
-    private ConfigurationFilesManager configurationFilesManager;
+    private ModulesFinder configurationFilesFinder;
+    private ModulesManager configurationFilesManager;
 
     public RestApiModulesLoader(DatabaseClient client) {
         this.client = client;
         this.extensionMetadataProvider = new XmlExtensionMetadataProvider();
-        this.configurationFilesFinder = new DefaultConfigurationFilesFinder();
-        this.configurationFilesManager = new PropertiesConfigurationFilesManager();
+        this.configurationFilesFinder = new DefaultModulesFinder();
+        this.configurationFilesManager = new PropertiesModuleManager();
     }
 
     public Set<File> loadModules(File baseDir) {
         configurationFilesManager.initialize();
 
-        ConfigurationFiles files = configurationFilesFinder.findConfigurationFiles(baseDir);
+        Modules files = configurationFilesFinder.findModules(baseDir);
 
         Set<File> loadedModules = new HashSet<>();
         
@@ -183,11 +183,11 @@ public class RestApiModulesLoader extends LoggingObject {
         this.extensionMetadataProvider = extensionMetadataProvider;
     }
 
-    public void setConfigurationFilesFinder(ConfigurationFilesFinder extensionFilesFinder) {
+    public void setConfigurationFilesFinder(ModulesFinder extensionFilesFinder) {
         this.configurationFilesFinder = extensionFilesFinder;
     }
 
-    public void setConfigurationFilesManager(ConfigurationFilesManager configurationFilesManager) {
+    public void setConfigurationFilesManager(ModulesManager configurationFilesManager) {
         this.configurationFilesManager = configurationFilesManager;
     }
 }

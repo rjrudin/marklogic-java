@@ -10,11 +10,11 @@ import org.springframework.core.io.ClassPathResource;
 
 public class DefaultConfigurationFilesFinderTest extends Assert {
 
-    private ConfigurationFilesFinder sut = new DefaultConfigurationFilesFinder();
+    private ModulesFinder sut = new DefaultModulesFinder();
 
     @Test
     public void baseDirWithExtensionsOfEachKind() throws IOException {
-        ConfigurationFiles files = sut.findConfigurationFiles(getBaseDir("sample-base-dir"));
+        Modules files = sut.findModules(getBaseDir("sample-base-dir"));
         assertEquals(1, files.getOptions().size());
         assertEquals("Only recognized XQuery files should be included; the XML file should be ignored", 2, files
                 .getServices().size());
@@ -29,7 +29,7 @@ public class DefaultConfigurationFilesFinderTest extends Assert {
 
     @Test
     public void emptyBaseDir() throws IOException {
-        ConfigurationFiles files = sut.findConfigurationFiles(getBaseDir("empty-base-dir"));
+        Modules files = sut.findModules(getBaseDir("empty-base-dir"));
         assertEquals(0, files.getAssets().size());
         assertEquals(0, files.getOptions().size());
         assertEquals(0, files.getServices().size());
@@ -38,7 +38,7 @@ public class DefaultConfigurationFilesFinderTest extends Assert {
 
     @Test
     public void versionControlFilesInAssetsDirectory() {
-        ConfigurationFiles files = sut.findConfigurationFiles(getBaseDir("base-dir-with-version-control-files"));
+        Modules files = sut.findModules(getBaseDir("base-dir-with-version-control-files"));
 
         List<Asset> assets = files.getAssets();
         assertEquals(
