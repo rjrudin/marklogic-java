@@ -34,7 +34,7 @@ public class ConfigurationFilesWatcher {
             }
         });
 
-        RestApiConfigurer configurer = new RestApiConfigurer(client);
+        RestApiModulesLoader loader = new RestApiModulesLoader(client);
         List<File> dirs = new ArrayList<>();
         for (String path : commaDelimitedPaths.split(",")) {
             File dir = new File(path);
@@ -47,7 +47,7 @@ public class ConfigurationFilesWatcher {
                 logger.trace("Auto-installing any modified files");
             }
             for (File dir : dirs) {
-                configurer.loadModules(dir);
+                loader.loadModules(dir);
             }
             Thread.sleep(1000);
         }

@@ -11,11 +11,11 @@ import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 import com.marklogic.client.DatabaseClient;
-import com.marklogic.client.configurer.ml7.RestApiConfigurer;
+import com.marklogic.client.configurer.ml7.RestApiModulesLoader;
 import com.marklogic.client.helper.DatabaseClientProvider;
 
 /**
- * Processes Configurers and Configurer annotations to configure an application via a RestApiConfigurer.
+ * Processes Configurers and Configurer annotations to configure an application via a RestApiModulesLoader.
  */
 public class ConfigurerTestExecutionListener extends AbstractTestExecutionListener {
 
@@ -50,7 +50,7 @@ public class ConfigurerTestExecutionListener extends AbstractTestExecutionListen
                     if (logger.isInfoEnabled()) {
                         logger.info(String.format("Configuring application, using base directory of %s", baseDir));
                     }
-                    Set<File> loadedModules = new RestApiConfigurer(client).loadModules(new File(baseDir));
+                    Set<File> loadedModules = new RestApiModulesLoader(client).loadModules(new File(baseDir));
                     if (loadedModules != null) {
                         testContext.getApplicationContext().publishEvent(new ModulesLoadedEvent(loadedModules));
                     }

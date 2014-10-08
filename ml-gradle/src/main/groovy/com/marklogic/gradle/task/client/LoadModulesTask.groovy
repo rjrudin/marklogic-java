@@ -3,7 +3,7 @@ package com.marklogic.gradle.task.client
 import org.gradle.api.tasks.TaskAction
 
 import com.marklogic.client.DatabaseClient
-import com.marklogic.client.configurer.ml7.RestApiConfigurer
+import com.marklogic.client.configurer.ml7.RestApiModulesLoader
 
 class LoadModulesTask extends ClientTask {
 
@@ -12,7 +12,7 @@ class LoadModulesTask extends ClientTask {
     @TaskAction
     void loadModules() {
         DatabaseClient client = newClient()
-        RestApiConfigurer configurer = new RestApiConfigurer(client)
+        RestApiModulesLoader configurer = new RestApiModulesLoader(client)
         List<String> directories = modulePaths != null ? modulePaths : getAppConfig().configPaths
         println "Module paths: " + directories
         try {
