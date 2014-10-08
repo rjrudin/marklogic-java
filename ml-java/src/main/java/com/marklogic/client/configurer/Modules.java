@@ -9,7 +9,8 @@ public class Modules {
     private List<Asset> assets;
     private List<File> transforms;
     private List<File> options;
-
+    private List<File> namespaces;
+    
     public List<File> getServices() {
         return services;
     }
@@ -40,6 +41,14 @@ public class Modules {
 
     public void setOptions(List<File> queryOptions) {
         this.options = queryOptions;
+    }
+
+    public List<File> getNamespaces() {
+        return namespaces;
+    }
+
+    public void setNamespaces(List<File> namespaces) {
+        this.namespaces = namespaces;
     }
 
 }

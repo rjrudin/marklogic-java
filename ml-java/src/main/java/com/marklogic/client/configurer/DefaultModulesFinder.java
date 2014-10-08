@@ -9,18 +9,20 @@ public class DefaultModulesFinder implements ModulesFinder {
 
     private FilenameFilter assetFilenameFilter = new AssetFilenameFilter();
     private FilenameFilter transformFilenameFilter = new TransformFilenameFilter();
+    private FilenameFilter namespaceFilenameFilter = new NamespaceFilenameFilter();
 
     @Override
     public Modules findModules(File baseDir) {
-        Modules files = new Modules();
-        addServices(files, baseDir);
-        addAssets(files, baseDir);
-        addOptions(files, baseDir);
-        addTransforms(files, baseDir);
-        return files;
+        Modules modules = new Modules();
+        addServices(modules, baseDir);
+        addAssets(modules, baseDir);
+        addOptions(modules, baseDir);
+        addTransforms(modules, baseDir);
+        addNamespaces(modules, baseDir);
+        return modules;
     }
 
-    protected void addServices(Modules files, File baseDir) {
+    protected void addServices(Modules modules, File baseDir) {
         File servicesBaseDir = new File(baseDir, "services");
         List<File> services = new ArrayList<>();
         if (servicesBaseDir.exists()) {
@@ -30,14 +32,14 @@ public class DefaultModulesFinder implements ModulesFinder {
                 }
             }
         }
-        files.setServices(services);
+        modules.setServices(services);
     }
 
-    protected void addAssets(Modules files, File baseDir) {
+    protected void addAssets(Modules modules, File baseDir) {
         File assetsBaseDir = new File(baseDir, "ext");
         List<Asset> assets = new ArrayList<>();
         addAssetFiles(assetsBaseDir, "", assets);
-        files.setAssets(assets);
+        modules.setAssets(assets);
     }
 
     protected void addAssetFiles(File dir, String pathRelativeToAssetsDir, List<Asset> assets) {
@@ -53,7 +55,7 @@ public class DefaultModulesFinder implements ModulesFinder {
         }
     }
 
-    protected void addOptions(Modules files, File baseDir) {
+    protected void addOptions(Modules modules, File baseDir) {
         File queryOptionsBaseDir = new File(baseDir, "options");
         List<File> queryOptions = new ArrayList<>();
         if (queryOptionsBaseDir.exists()) {
@@ -63,10 +65,21 @@ public class DefaultModulesFinder implements ModulesFinder {
                 }
             }
         }
-        files.setOptions(queryOptions);
+        modules.setOptions(queryOptions);
     }
 
-    protected void addTransforms(Modules files, File baseDir) {
+    protected void addNamespaces(Modules modules, File baseDir) {
+        File namespacesDir = new File(baseDir, "namespaces");
+        List<File> namespaces = new ArrayList<>();
+        if (namespacesDir.exists()) {
+            for (File f : namespacesDir.listFiles(namespaceFilenameFilter)) {
+                namespaces.add(f);
+            }
+        }
+        modules.setNamespaces(namespaces);
+    }
+
+    protected void addTransforms(Modules modules, File baseDir) {
         File transformsBaseDir = new File(baseDir, "transforms");
         List<File> transforms = new ArrayList<>();
         if (transformsBaseDir.exists()) {
@@ -74,7 +87,7 @@ public class DefaultModulesFinder implements ModulesFinder {
                 transforms.add(f);
             }
         }
-        files.setTransforms(transforms);
+        modules.setTransforms(transforms);
     }
 
     public FilenameFilter getTransformFilenameFilter() {
@@ -92,6 +105,14 @@ public class DefaultModulesFinder implements ModulesFinder {
     public void setAssetFilenameFilter(FilenameFilter assetFilenameFilter) {
         this.assetFilenameFilter = assetFilenameFilter;
     }
+
+    public FilenameFilter getNamespaceFilenameFilter() {
+        return namespaceFilenameFilter;
+    }
+
+    public void setNamespaceFilenameFilter(FilenameFilter namespaceFilenameFilter) {
+        this.namespaceFilenameFilter = namespaceFilenameFilter;
+    }
 }
 
 class AssetFilenameFilter implements FilenameFilter {
@@ -108,6 +129,15 @@ class TransformFilenameFilter implements FilenameFilter {
     @Override
     public boolean accept(File dir, String name) {
         return FilenameUtil.isXslFile(name) || FilenameUtil.isXqueryFile(name);
+    }
+
+}
+
+class NamespaceFilenameFilter implements FilenameFilter {
+
+    @Override
+    public boolean accept(File dir, String name) {
+        return true;
     }
 
 }

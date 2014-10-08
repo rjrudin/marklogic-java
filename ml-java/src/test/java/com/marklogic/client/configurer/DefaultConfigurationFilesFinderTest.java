@@ -25,6 +25,10 @@ public class DefaultConfigurationFilesFinderTest extends Assert {
         assertEquals(2, assets.size());
         assertEquals("/lib/module2.xqy", assets.get(0).getPath());
         assertEquals("/module1.xqy", assets.get(1).getPath());
+
+        assertEquals(
+                "Namespace files don't have to fit any filename format; the body of the file should be the namespace URI",
+                1, files.getNamespaces().size());
     }
 
     @Test

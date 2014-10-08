@@ -1,24 +1,29 @@
 package com.marklogic.client.configurer.ml7;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.springframework.util.FileCopyUtils;
 
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.FailedRequestException;
 import com.marklogic.client.admin.ExtensionLibrariesManager;
 import com.marklogic.client.admin.ExtensionMetadata;
+import com.marklogic.client.admin.NamespacesManager;
 import com.marklogic.client.admin.QueryOptionsManager;
 import com.marklogic.client.admin.ResourceExtensionsManager;
 import com.marklogic.client.admin.ResourceExtensionsManager.MethodParameters;
 import com.marklogic.client.admin.TransformExtensionsManager;
 import com.marklogic.client.configurer.Asset;
+import com.marklogic.client.configurer.DefaultModulesFinder;
+import com.marklogic.client.configurer.FilenameUtil;
 import com.marklogic.client.configurer.Modules;
 import com.marklogic.client.configurer.ModulesFinder;
 import com.marklogic.client.configurer.ModulesManager;
-import com.marklogic.client.configurer.DefaultModulesFinder;
-import com.marklogic.client.configurer.FilenameUtil;
 import com.marklogic.client.configurer.PropertiesModuleManager;
 import com.marklogic.client.configurer.metadata.ExtensionMetadataAndParams;
 import com.marklogic.client.configurer.metadata.ExtensionMetadataProvider;
@@ -47,7 +52,7 @@ public class RestApiModulesLoader extends LoggingObject {
         Modules files = configurationFilesFinder.findModules(baseDir);
 
         Set<File> loadedModules = new HashSet<>();
-        
+
         for (Asset asset : files.getAssets()) {
             File f = installAsset(asset);
             if (f != null) {
@@ -77,7 +82,13 @@ public class RestApiModulesLoader extends LoggingObject {
                 loadedModules.add(f);
             }
         }
-        
+
+        for (File f : files.getNamespaces()) {
+            f = installNamespace(f);
+            if (f != null) {
+                loadedModules.add(f);
+            }
+        }
         return loadedModules;
     }
 
@@ -90,7 +101,7 @@ public class RestApiModulesLoader extends LoggingObject {
         Format format = determineFormat(file);
         FileHandle h = new FileHandle(file);
         String path = "/ext" + asset.getPath();
-        logger.info(String.format("Installing asset at path %s from file %s", path, file.getAbsolutePath()));
+        logger.info(String.format("Loading module at path %s from file %s", path, file.getAbsolutePath()));
         try {
             libMgr.write(path, h.withFormat(format));
         } catch (FailedRequestException fre) {
@@ -129,7 +140,7 @@ public class RestApiModulesLoader extends LoggingObject {
         if (metadata.getTitle() == null) {
             metadata.setTitle(resourceName + " resource extension");
         }
-        logger.info(String.format("Installing %s resource extension from file %s", resourceName, file));
+        logger.info(String.format("Loading %s resource extension from file %s", resourceName, file));
         try {
             extMgr.writeServices(resourceName, new FileHandle(file), metadata, methodParams);
             configurationFilesManager.saveLastInstalledTimestamp(file, new Date());
@@ -145,7 +156,7 @@ public class RestApiModulesLoader extends LoggingObject {
         }
         TransformExtensionsManager mgr = client.newServerConfigManager().newTransformExtensionsManager();
         String transformName = getExtensionNameFromFile(file);
-        logger.info(String.format("Installing %s transform from file %s", transformName, file));
+        logger.info(String.format("Loading %s transform from file %s", transformName, file));
         try {
             if (FilenameUtil.isXslFile(file.getName())) {
                 mgr.writeXSLTransform(transformName, new FileHandle(file), metadata);
@@ -164,10 +175,33 @@ public class RestApiModulesLoader extends LoggingObject {
             return null;
         }
         String name = getExtensionNameFromFile(f);
-        logger.info(String.format("Installing %s query options from file %s", name, f.getName()));
+        logger.info(String.format("Loading %s query options from file %s", name, f.getName()));
         QueryOptionsManager mgr = client.newServerConfigManager().newQueryOptionsManager();
         mgr.writeOptions(name, new FileHandle(f));
         configurationFilesManager.saveLastInstalledTimestamp(f, new Date());
+        return f;
+    }
+
+    public File installNamespace(File f) {
+        if (!configurationFilesManager.hasFileBeenModifiedSinceLastInstalled(f)) {
+            return null;
+        }
+        String prefix = getExtensionNameFromFile(f);
+        String namespaceUri = null;
+        try {
+            namespaceUri = FileCopyUtils.copyToString(new FileReader(f));
+        } catch (IOException ie) {
+            logger.error("Unable to install namespace from file: " + f.getAbsolutePath(), ie);
+            return null;
+        }
+        NamespacesManager mgr = client.newServerConfigManager().newNamespacesManager();
+        String existingUri = mgr.readPrefix(prefix);
+        if (existingUri != null) {
+            logger.info("Deleting namespace with prefix of %s and URI of %s", prefix, existingUri);
+            mgr.deletePrefix(prefix);
+        }
+        logger.info(String.format("Adding namespace with prefix of %s and URI of %s", prefix, namespaceUri));
+        mgr.addPrefix(prefix, namespaceUri);
         return f;
     }
 
