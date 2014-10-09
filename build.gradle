@@ -26,7 +26,7 @@ subprojects {
       maven {
         if (project.hasProperty("nexusPublish")) {
           url "file:///usr/local/sonatype-work/nexus/storage/snapshots"
-        } else if (project.hasProperty("release")) {
+        } else if (!pubVersion.contains("SNAPSHOT")) {
           url "file://$projectDir/../../gh-pages-marklogic-java/releases"
         }
         else {
