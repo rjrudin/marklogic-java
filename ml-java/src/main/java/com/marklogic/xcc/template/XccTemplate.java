@@ -15,7 +15,12 @@ public class XccTemplate extends LoggingObject {
     public XccTemplate(String uri) {
         try {
             contentSource = ContentSourceFactory.newContentSource(new URI(uri));
-            logger.info("Connected to " + uri);
+            
+            String[] tokens = uri.split("@");
+            if (tokens.length > 1) {
+                String hostAndPort = tokens[tokens.length - 1];
+                logger.info("Connected to XDBC server at " + hostAndPort);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
