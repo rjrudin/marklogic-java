@@ -9,8 +9,7 @@ class MarkLogicTask extends DefaultTask {
     }
     
     String getDefaultXccUrl() {
-        AppConfig config = getAppConfig()
-        "xcc://${config.getUsername()}:${config.getPassword()}@${config.getHost()}:${config.getXdbcPort()}"
+        getAppConfig().getXccUrl()
     }
     
     boolean isTestPortSet() {

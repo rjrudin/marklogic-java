@@ -19,4 +19,8 @@ class AppConfig {
         configPaths = new ArrayList<String>()
         configPaths.add(defaultConfigPath)
     }
+    
+    public String getXccUrl() {
+        return "xcc://${username}:${password}@${host}:${xdbcPort}"
+    }
 }
