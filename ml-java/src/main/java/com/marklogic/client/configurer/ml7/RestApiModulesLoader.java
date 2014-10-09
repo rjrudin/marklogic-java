@@ -202,6 +202,7 @@ public class RestApiModulesLoader extends LoggingObject {
         }
         logger.info(String.format("Adding namespace with prefix of %s and URI of %s", prefix, namespaceUri));
         mgr.addPrefix(prefix, namespaceUri);
+        configurationFilesManager.saveLastInstalledTimestamp(f, new Date());
         return f;
     }
 
