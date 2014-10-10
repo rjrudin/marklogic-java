@@ -29,45 +29,45 @@ class MarkLogicPlugin implements Plugin<Project> {
         project.getConfigurations().create("mlRestApi")
 
         String group = "MarkLogic"
-        
-        project.task("mlDeleteLastConfigured", type: DeleteLastConfiguredTimestampsFileTask, group: group)
-        project.task("mlUninstallApp", type: UninstallAppTask, group: group)
-        
-        project.task("mlClearContentDatabase", type: ClearContentDatabaseTask, group: group)
-        project.task("mlClearModules", type: ClearModulesTask, group: group, dependsOn: "mlDeleteLastConfigured")
-        
-        project.task("mlPrepareRestApiDependencies", type: PrepareRestApiDependenciesTask, group: group, dependsOn: project.configurations["mlRestApi"])
 
-        project.task("mlMergeDatabasePackages", type: MergeDatabasePackagesTask, group: group, dependsOn:"mlPrepareRestApiDependencies")
-        project.task("mlMergeHttpServerPackages", type: MergeHttpServerPackagesTask, group: group)
+        project.task("mlDeleteLastConfigured", type: DeleteLastConfiguredTimestampsFileTask, group: group, description: "Delete the properties file in the build directory that keeps track of when each module was last installed.")
+        project.task("mlUninstallApp", type: UninstallAppTask, group: group, description: "Delete all application resources; this currently has a bug that may require manually deleting the content forest")
+
+        project.task("mlClearContentDatabase", type: ClearContentDatabaseTask, group: group, description: "Deletes all or a collection of documents from the content database")
+        project.task("mlClearModules", type: ClearModulesTask, group: group, dependsOn: "mlDeleteLastConfigured", description: "Deletes potentially all of the documents in the modules database; has a property for excluding documents from deletion")
+
+        project.task("mlPrepareRestApiDependencies", type: PrepareRestApiDependenciesTask, group: group, dependsOn: project.configurations["mlRestApi"], description: "Downloads (if necessary) and unzips in the build directory all mlRestApi dependencies")
+
+        project.task("mlMergeDatabasePackages", type: MergeDatabasePackagesTask, group: group, dependsOn:"mlPrepareRestApiDependencies", description: "Merges together the database packages that are defined by a property on this task; the result is written to the build directory")
+        project.task("mlMergeHttpServerPackages", type: MergeHttpServerPackagesTask, group: group, description:"Merges together the HTTP server packages that are defined by a property on this task; the result is written to the build directory")
 
         project.task("mlInstallApp", type: InstallAppTask, group: group, dependsOn: [
             "mlMergeDatabasePackages",
             "mlMergeHttpServerPackages"
-        ])
+        ], description: "Installs the application's resources (servers and databases); does not load any modules")
 
-        project.task("mlLoadModules", type: LoadModulesTask, group: group, dependsOn: "mlPrepareRestApiDependencies")
-        
+        project.task("mlLoadModules", type: LoadModulesTask, group: group, dependsOn: "mlPrepareRestApiDependencies", description: "Loads modules from directories defined by mlAppConfig or via a property on this task")
+
         project.task("mlDeploy", group: group, dependsOn: [
             "mlClearModules",
             "mlInstallApp",
             "mlLoadModules"
-        ])
+        ], description: "Deploys the application by first clearing the modules database (if it exists), installing the app, and then loading modules")
 
         project.task("mlReloadModules", group: group, dependsOn: [
             "mlClearModules",
             "mlLoadModules"
-        ])
-        
-        project.task("mlUpdateContentDatabase", type: UpdateDatabaseTask, group: group, dependsOn: "mlMergeDatabasePackages")
-        project.task("mlUpdateHttpServers", type: UpdateHttpServerTask, group: group, dependsOn: "mlMergeHttpServerPackages")
+        ], description: "Reloads modules by first clearing the modules database and then loading modules")
 
-        project.task("mlCreateResource", type: CreateResourceTask, group: group)
-        project.task("mlCreateTransform", type: CreateTransformTask, group: group)
-        
-        project.task("mlConfigureBitemporal", type: ConfigureBitemporalTask, group: group)
+        project.task("mlUpdateContentDatabase", type: UpdateDatabaseTask, group: group, dependsOn: "mlMergeDatabasePackages", description: "Updates the content database by building a new database package and then installing it")
+        project.task("mlUpdateHttpServers", type: UpdateHttpServerTask, group: group, dependsOn: "mlMergeHttpServerPackages", description: "Updates the HTTP servers by building a new HTTP server package and then installing it")
 
-        project.task("mlWatch", type: WatchTask, group: group)
+        project.task("mlCreateResource", type: CreateResourceTask, group: group, description: "Create a new resource extension in the src/main/xqy/services directory")
+        project.task("mlCreateTransform", type: CreateTransformTask, group: group, description: "Create a new transform in the src/main/xqy/transforms directory")
+
+        project.task("mlConfigureBitemporal", type: ConfigureBitemporalTask, group: group, description: "For MarkLogic 8 - configure support for bitemporal features")
+
+        project.task("mlWatch", type: WatchTask, group: group, description: "Run a loop that checks for new/modified modules every second and loads any that it finds")
     }
 
     void initializeAppConfig(Project project) {
