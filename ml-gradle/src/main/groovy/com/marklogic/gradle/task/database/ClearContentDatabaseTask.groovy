@@ -18,7 +18,7 @@ class ClearContentDatabaseTask extends ManageTask {
         
         if (project.hasProperty("collection")) {
             xquery = "xdmp:collection-delete('" + project.property("collection") + "')"
-        } else if (hasProperty("deleteAll")) {
+        } else if (project.hasProperty("deleteAll")) {
             xquery = "for \$forest-id in xdmp:database-forests(xdmp:database()) return xdmp:forest-clear(\$forest-id)"
         } else {
             println "To delete the documents in one collection, specify a collection via -Pcollection=name."
