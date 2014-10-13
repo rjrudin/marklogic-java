@@ -68,4 +68,32 @@ public class BasicTestConfig {
         int xdbcPort = (mlTestXdbcPort != null && mlTestXdbcPort > 0) ? mlTestXdbcPort : mlXdbcPort;
         return new XccTemplate(String.format("xcc://%s:%s@%s:%d", mlUsername, mlPassword, mlHost, xdbcPort));
     }
+
+    public String getMlUsername() {
+        return mlUsername;
+    }
+
+    public String getMlPassword() {
+        return mlPassword;
+    }
+
+    public String getMlHost() {
+        return mlHost;
+    }
+
+    public Integer getMlRestPort() {
+        return mlRestPort;
+    }
+
+    public Integer getMlXdbcPort() {
+        return mlXdbcPort;
+    }
+
+    public Integer getMlTestRestPort() {
+        return mlTestRestPort;
+    }
+
+    public Integer getMlTestXdbcPort() {
+        return mlTestXdbcPort;
+    }
 }
