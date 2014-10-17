@@ -44,11 +44,11 @@ class MarkLogicPlugin implements Plugin<Project> {
         project.task("mlInstallApp", type: InstallAppTask, group: group, dependsOn: [
             "mlMergeDatabasePackages",
             "mlMergeHttpServerPackages"
-        ], description: "Installs the application's resources (servers and databases); does not load any modules")
+        ], description: "Installs the application's resources (servers and databases); does not load any modules").mustRunAfter("mlClearModules")
 
-        project.task("mlLoadModules", type: LoadModulesTask, group: group, dependsOn: "mlPrepareRestApiDependencies", description: "Loads modules from directories defined by mlAppConfig or via a property on this task")
+        project.task("mlLoadModules", type: LoadModulesTask, group: group, dependsOn: "mlPrepareRestApiDependencies", description: "Loads modules from directories defined by mlAppConfig or via a property on this task").mustRunAfter(["mlInstallApp", "mlClearModules"])
 
-        project.task("mlPostDeploy", group: group, description: "Add dependsOn to this to add tasks to mlDeploy")
+        project.task("mlPostDeploy", group: group, description: "Add dependsOn to this to add tasks to mlDeploy").mustRunAfter("mlLoadModules")
         
         project.task("mlDeploy", group: group, dependsOn: [
             "mlClearModules",
