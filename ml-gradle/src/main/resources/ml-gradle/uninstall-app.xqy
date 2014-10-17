@@ -5,9 +5,10 @@ import module namespace sec = "http://marklogic.com/xdmp/security" at "/MarkLogi
 
 declare function local:find-appservers($config, $app-name)
 {
-  for $name in ($app-name, fn:concat($app-name, "-test"), fn:concat($app-name, "-content-xdbc"), fn:concat($app-name, "-test-content-xdbc"))
-  where admin:appserver-exists($config, (), $name)
-  return admin:appserver-get-id($config, (), $name)
+  for $id in admin:get-appserver-ids($config)
+  let $name := admin:appserver-get-name($config, $id)
+  where $name = $app-name or fn:starts-with($name, fn:concat($app-name, "-"))
+  return $id
 };
 
 (:
@@ -42,9 +43,10 @@ import module namespace sec = "http://marklogic.com/xdmp/security" at "/MarkLogi
 
 declare function local:find-appservers($config, $app-name)
 {
-  for $name in ($app-name, fn:concat($app-name, "-test"), fn:concat($app-name, "-content-xdbc"), fn:concat($app-name, "-test-content-xdbc"))
-  where admin:appserver-exists($config, (), $name)
-  return admin:appserver-get-id($config, (), $name)
+  for $id in admin:get-appserver-ids($config)
+  let $name := admin:appserver-get-name($config, $id)
+  where $name = $app-name or fn:starts-with($name, fn:concat($app-name, "-"))
+  return $id
 };
 
 declare function local:find-databases($config, $app-name)
