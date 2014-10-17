@@ -10,9 +10,15 @@ import org.gradle.api.tasks.TaskAction
  */
 class MlcpTask extends JavaExec {
 
+    String host
+    Integer port
+    String username
+    String password 
+    
     String command
     String input_file_path
     String input_file_type
+    String input_file_pattern
     String input_compressed
     String document_type
     String output_collections
@@ -21,6 +27,8 @@ class MlcpTask extends JavaExec {
     String namespace
     String options_file
     String output_uri_prefix
+    String output_uri_replace
+    String output_permissions
     String transform_module
     String transform_namespace
     String thread_count
@@ -31,14 +39,15 @@ class MlcpTask extends JavaExec {
         setMain("com.marklogic.contentpump.ContentPump")
         com.marklogic.gradle.AppConfig config = getProject().property("mlAppConfig")
 
+        
         List<String> newArgs = new ArrayList<>()
         newArgs.add(command)
         newArgs.add("-host")
-        newArgs.add(config.getHost())
+        newArgs.add(host ? host : config.getHost())
         newArgs.add("-port")
-        newArgs.add(config.getXdbcPort())
+        newArgs.add(port ? port : config.getXdbcPort())
         newArgs.add("-username")
-        newArgs.add(config.getUsername())
+        newArgs.add(username ? username : config.getUsername())
 
         if (input_file_path) {
             newArgs.add("-input_file_path")
@@ -47,6 +56,10 @@ class MlcpTask extends JavaExec {
         if (input_file_type) {
             newArgs.add("-input_file_type")
             newArgs.add(input_file_type)
+        }
+        if (input_file_pattern) {
+            newArgs.add("-input_file_pattern")
+            newArgs.add(input_file_pattern)
         }
         if (input_compressed) {
             newArgs.add("-input_compressed")
@@ -80,6 +93,14 @@ class MlcpTask extends JavaExec {
             newArgs.add("-output_uri_prefix")
             newArgs.add(output_uri_prefix)
         }
+        if (output_uri_replace) {
+            newArgs.add("-output_uri_replace")
+            newArgs.add(output_uri_replace)
+        }
+        if (output_permissions) {
+            newArgs.add("-output_permissions")
+            newArgs.add(output_permissions)
+        }
         if (transform_module) {
             newArgs.add("-transform_module")
             newArgs.add(transform_module)
@@ -98,7 +119,7 @@ class MlcpTask extends JavaExec {
         println "mlcp arguments, excluding password: " + newArgs
         
         newArgs.add("-password")
-        newArgs.add(config.getPassword())
+        newArgs.add(password ? password : config.getPassword())
         
         setArgs(newArgs)
 
