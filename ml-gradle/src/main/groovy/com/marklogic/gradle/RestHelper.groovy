@@ -80,6 +80,31 @@ class RestHelper {
         invoke("POST", "/manage/v2/packages/${packageName}/servers/${serverName}?group-id=${groupName}", xml, "application/xml")
     }
     
+    void addModulesXdbcServer(String appName, Integer port) {
+        addModulesXdbcServer(appName + "-package", "Default", appName, port, null)
+    }
+    
+    // TODO Resolve duplication between this and addXdbcServer
+    void addModulesXdbcServer(String packageName, String groupName, String appName, Integer port, String packageFilePath) {
+        String xml = null
+        if (packageFilePath && new File(packageFilePath).exists()) {
+            println "\nUsing XDBC package at file path ${packageFilePath}"
+            xml = new File(packageFilePath).text
+        } else {
+            xml = XdbcServerTemplate.TEMPLATE
+        }
+        
+        String serverName = appName + "-modules-xdbc"
+        xml = xml.replace("%%GROUP_NAME%%", groupName)
+        xml = xml.replace("%%SERVER_NAME%%", serverName)
+        xml = xml.replace("%%PORT%%", port.toString())
+        xml = xml.replace("%%DATABASE_NAME%%", appName + "-modules")
+        xml = xml.replace("%%MODULES_DATABASE_NAME%%", appName + "-modules")
+        
+        println "\nAdding server ${serverName} in group ${groupName} to package ${packageName}"
+        invoke("POST", "/manage/v2/packages/${packageName}/servers/${serverName}?group-id=${groupName}", xml, "application/xml")
+    }
+    
     void installAsset(String assetPath, String requestContentType, String path, String format) {
         String assetText = new File(assetPath).text
         String url = "/v1/ext/" + path
