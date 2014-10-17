@@ -48,10 +48,13 @@ class MarkLogicPlugin implements Plugin<Project> {
 
         project.task("mlLoadModules", type: LoadModulesTask, group: group, dependsOn: "mlPrepareRestApiDependencies", description: "Loads modules from directories defined by mlAppConfig or via a property on this task")
 
+        project.task("mlPostDeploy", group: group, description: "Add dependsOn to this to add tasks to mlDeploy")
+        
         project.task("mlDeploy", group: group, dependsOn: [
             "mlClearModules",
             "mlInstallApp",
-            "mlLoadModules"
+            "mlLoadModules",
+            "mlPostDeploy"
         ], description: "Deploys the application by first clearing the modules database (if it exists), installing the app, and then loading modules")
 
         project.task("mlReloadModules", group: group, dependsOn: [
