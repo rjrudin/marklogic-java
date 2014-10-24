@@ -14,6 +14,18 @@ public class SecurityHelper extends LoggingObject {
         this.xccHelper = xccHelper;
     }
 
+    public void createRole(String roleName) {
+        String xquery = "declare variable $role external; if (sec:role-exists($role)) then () else sec:create-role($role, (), (), (), ())";
+        evaluateAgainstSecurityDatabase(xquery, "role", roleName);
+    }
+
+    public void setPrivilegeForRole(String roleName, String privilegeAction, String privilegeKind) {
+        String xquery = "declare variable $action external;  declare variable $kind external; declare variable $role-names external; "
+                + "sec:privilege-set-roles($action, $kind, (sec:privilege-get-roles($action, $kind), $role-names))";
+        evaluateAgainstSecurityDatabase(xquery, "role-names", roleName, "action", privilegeAction, "kind",
+                privilegeKind);
+    }
+
     public void removeRoles(String... roles) {
         for (String role : roles) {
             String xquery = "declare variable $role external; if (sec:role-exists($role)) then sec:remove-role($role) else ()";
