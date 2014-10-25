@@ -36,20 +36,20 @@ public class RestApiModulesLoader extends LoggingObject {
 
     private DatabaseClient client;
     private ExtensionMetadataProvider extensionMetadataProvider;
-    private ModulesFinder configurationFilesFinder;
-    private ModulesManager configurationFilesManager;
+    private ModulesFinder modulesFinder;
+    private ModulesManager modulesManager;
 
     public RestApiModulesLoader(DatabaseClient client) {
         this.client = client;
         this.extensionMetadataProvider = new XmlExtensionMetadataProvider();
-        this.configurationFilesFinder = new DefaultModulesFinder();
-        this.configurationFilesManager = new PropertiesModuleManager();
+        this.modulesFinder = new DefaultModulesFinder();
+        this.modulesManager = new PropertiesModuleManager();
     }
 
     public Set<File> loadModules(File baseDir) {
-        configurationFilesManager.initialize();
+        modulesManager.initialize();
 
-        Modules files = configurationFilesFinder.findModules(baseDir);
+        Modules files = modulesFinder.findModules(baseDir);
 
         Set<File> loadedModules = new HashSet<>();
 
@@ -92,9 +92,25 @@ public class RestApiModulesLoader extends LoggingObject {
         return loadedModules;
     }
 
+    /**
+     * This can be used by projects that use MLCP to load many modules in the assets directory. In
+     * such a case, it's usually desirable to pretend to load all of the assets so that the
+     * timestamp at which each asset was last loaded is updated to the current time.
+     * 
+     * @param baseDir
+     */
+    public void simulateLoadingOfAllAssets(File baseDir) {
+        Date now = new Date();
+        modulesManager.initialize();
+        Modules files = modulesFinder.findModules(baseDir);
+        for (Asset asset : files.getAssets()) {
+            modulesManager.saveLastInstalledTimestamp(asset.getFile(), now);
+        }
+    }
+
     public File installAsset(Asset asset) {
         File file = asset.getFile();
-        if (!configurationFilesManager.hasFileBeenModifiedSinceLastInstalled(file)) {
+        if (!modulesManager.hasFileBeenModifiedSinceLastInstalled(file)) {
             return null;
         }
         ExtensionLibrariesManager libMgr = client.newServerConfigManager().newExtensionLibrariesManager();
@@ -108,13 +124,14 @@ public class RestApiModulesLoader extends LoggingObject {
             logger.warn("Caught exception, retrying as binary file; exception message: " + fre.getMessage());
             libMgr.write(path, h.withFormat(Format.BINARY));
         }
-        configurationFilesManager.saveLastInstalledTimestamp(file, new Date());
+        modulesManager.saveLastInstalledTimestamp(file, new Date());
         return file;
     }
 
     /**
-     * TODO Need something pluggable here - probably should delegate this to a separate object so that a client could
-     * easily provide a different implementation in case the assumptions below aren't correct.
+     * TODO Need something pluggable here - probably should delegate this to a separate object so
+     * that a client could easily provide a different implementation in case the assumptions below
+     * aren't correct.
      * 
      * @param file
      * @return
@@ -132,7 +149,7 @@ public class RestApiModulesLoader extends LoggingObject {
     }
 
     public File installResource(File file, ExtensionMetadata metadata, MethodParameters... methodParams) {
-        if (!configurationFilesManager.hasFileBeenModifiedSinceLastInstalled(file)) {
+        if (!modulesManager.hasFileBeenModifiedSinceLastInstalled(file)) {
             return null;
         }
         ResourceExtensionsManager extMgr = client.newServerConfigManager().newResourceExtensionsManager();
@@ -143,7 +160,7 @@ public class RestApiModulesLoader extends LoggingObject {
         logger.info(String.format("Loading %s resource extension from file %s", resourceName, file));
         try {
             extMgr.writeServices(resourceName, new FileHandle(file), metadata, methodParams);
-            configurationFilesManager.saveLastInstalledTimestamp(file, new Date());
+            modulesManager.saveLastInstalledTimestamp(file, new Date());
             return file;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -151,7 +168,7 @@ public class RestApiModulesLoader extends LoggingObject {
     }
 
     public File installTransform(File file, ExtensionMetadata metadata) {
-        if (!configurationFilesManager.hasFileBeenModifiedSinceLastInstalled(file)) {
+        if (!modulesManager.hasFileBeenModifiedSinceLastInstalled(file)) {
             return null;
         }
         TransformExtensionsManager mgr = client.newServerConfigManager().newTransformExtensionsManager();
@@ -163,7 +180,7 @@ public class RestApiModulesLoader extends LoggingObject {
             } else {
                 mgr.writeXQueryTransform(transformName, new FileHandle(file), metadata);
             }
-            configurationFilesManager.saveLastInstalledTimestamp(file, new Date());
+            modulesManager.saveLastInstalledTimestamp(file, new Date());
             return file;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -171,19 +188,19 @@ public class RestApiModulesLoader extends LoggingObject {
     }
 
     public File installQueryOptions(File f) {
-        if (!configurationFilesManager.hasFileBeenModifiedSinceLastInstalled(f)) {
+        if (!modulesManager.hasFileBeenModifiedSinceLastInstalled(f)) {
             return null;
         }
         String name = getExtensionNameFromFile(f);
         logger.info(String.format("Loading %s query options from file %s", name, f.getName()));
         QueryOptionsManager mgr = client.newServerConfigManager().newQueryOptionsManager();
         mgr.writeOptions(name, new FileHandle(f));
-        configurationFilesManager.saveLastInstalledTimestamp(f, new Date());
+        modulesManager.saveLastInstalledTimestamp(f, new Date());
         return f;
     }
 
     public File installNamespace(File f) {
-        if (!configurationFilesManager.hasFileBeenModifiedSinceLastInstalled(f)) {
+        if (!modulesManager.hasFileBeenModifiedSinceLastInstalled(f)) {
             return null;
         }
         String prefix = getExtensionNameFromFile(f);
@@ -202,7 +219,7 @@ public class RestApiModulesLoader extends LoggingObject {
         }
         logger.info(String.format("Adding namespace with prefix of %s and URI of %s", prefix, namespaceUri));
         mgr.addPrefix(prefix, namespaceUri);
-        configurationFilesManager.saveLastInstalledTimestamp(f, new Date());
+        modulesManager.saveLastInstalledTimestamp(f, new Date());
         return f;
     }
 
@@ -219,10 +236,10 @@ public class RestApiModulesLoader extends LoggingObject {
     }
 
     public void setConfigurationFilesFinder(ModulesFinder extensionFilesFinder) {
-        this.configurationFilesFinder = extensionFilesFinder;
+        this.modulesFinder = extensionFilesFinder;
     }
 
     public void setConfigurationFilesManager(ModulesManager configurationFilesManager) {
-        this.configurationFilesManager = configurationFilesManager;
+        this.modulesManager = configurationFilesManager;
     }
 }
