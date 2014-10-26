@@ -40,16 +40,58 @@ public class SecurityHelper extends LoggingObject {
         }
     }
 
+    public void createUser(String username, String description, String password, String[] roleNames,
+            String[] permissionRoles, String[] permissionCapabilities, String[] collections) {
+        String xml = "<user>";
+        xml += "<username>" + username + "</username>";
+        xml += "<description>" + description + "</description>";
+        xml += "<password>" + password + "</password>";
+        if (roleNames != null) {
+            xml += "<roles>";
+            for (String role : roleNames) {
+                xml += "<role>" + role + "</role>";
+            }
+            xml += "</roles>";
+        }
+        if (collections != null) {
+            xml += "<collections>";
+            for (String c : collections) {
+                xml += "<uri>" + c + "</uri>";
+            }
+            xml += "</collections>";
+        }
+        if (permissionRoles != null) {
+            xml += "<permissions>";
+            for (int i = 0; i < permissionRoles.length; i++) {
+                xml += "<permission>";
+                xml += "<role>" + permissionRoles[i] + "</role>";
+                xml += "<capability>" + permissionCapabilities[i] + "</capability>";
+                xml += "</permission>";
+            }
+            xml += "</permissions>";
+        }
+        xml += "</user>";
+        String xquery = "declare variable $user external; if (sec:user-exists($user/username)) then () else ";
+        xquery += "let $perms := for $perm in $user/permissions/permission return xdmp:permission($perm/role, $perm/capability) ";
+        xquery += "return sec:create-user($user/username, $user/description, $user/password, $user/roles/role/text(), $perms, $user/collections/uri/text())";
+        evaluateAgainstSecurityDatabase(xquery, "user", xml);
+    }
+
     public String evaluateAgainstSecurityDatabase(String xquery, String... vars) {
         String v = "(";
         for (int i = 0; i < vars.length; i++) {
+            String var = vars[i];
             if (i > 0) {
                 v += ", ";
             }
             if (i % 2 == 1) {
-                v += "'" + vars[i] + "'";
+                if (var.startsWith("(") || var.startsWith("<")) {
+                    v += vars[i];
+                } else {
+                    v += "'" + vars[i] + "'";
+                }
             } else {
-                v += "xs:QName('" + vars[i] + "')";
+                v += "xs:QName('" + var + "')";
             }
         }
         v += ")";
@@ -60,4 +102,9 @@ public class SecurityHelper extends LoggingObject {
                 + ", <options xmlns='xdmp:eval'><database>{xdmp:security-database()}</database></options>)";
         return xccHelper.executeXquery(s);
     }
+
+    public XccHelper getXccHelper() {
+        return xccHelper;
+    }
+
 }
