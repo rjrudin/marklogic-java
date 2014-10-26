@@ -14,9 +14,28 @@ public class SecurityHelper extends LoggingObject {
         this.xccHelper = xccHelper;
     }
 
-    public void createRole(String roleName) {
-        String xquery = "declare variable $role external; if (sec:role-exists($role)) then () else sec:create-role($role, (), (), (), ())";
-        evaluateAgainstSecurityDatabase(xquery, "role", roleName);
+    public void removeRoles(String... roles) {
+        for (String role : roles) {
+            String xquery = "declare variable $role external; if (sec:role-exists($role)) then sec:remove-role($role) else ()";
+            evaluateAgainstSecurityDatabase(xquery, "role", role);
+        }
+    }
+
+    public void createRole(String name, String description, String[] roleNames, String[] permissionRoles,
+            String[] permissionCapabilities, String[] collections) {
+        String xml = "<role>";
+        xml += "<name>" + name + "</name>";
+        if (description != null) {
+            xml += "<description>" + description + "</description>";
+        }
+        xml += buildXmlForRolesCollectionsAndPermissions(roleNames, permissionRoles, permissionCapabilities,
+                collections);
+        xml += "</role>";
+
+        String xquery = "declare variable $role external; if (sec:role-exists($role/name)) then () else ";
+        xquery += "let $perms := for $perm in $role/permissions/permission return xdmp:permission($perm/role, $perm/capability) ";
+        xquery += "return sec:create-role($role/name, $role/description, $role/roles/role/text(), $perms, $role/collections/uri/text())";
+        evaluateAgainstSecurityDatabase(xquery, "role", xml);
     }
 
     public void setPrivilegeForRole(String roleName, String privilegeAction, String privilegeKind) {
@@ -24,13 +43,6 @@ public class SecurityHelper extends LoggingObject {
                 + "sec:privilege-set-roles($action, $kind, (sec:privilege-get-roles($action, $kind), $role-names))";
         evaluateAgainstSecurityDatabase(xquery, "role-names", roleName, "action", privilegeAction, "kind",
                 privilegeKind);
-    }
-
-    public void removeRoles(String... roles) {
-        for (String role : roles) {
-            String xquery = "declare variable $role external; if (sec:role-exists($role)) then sec:remove-role($role) else ()";
-            evaluateAgainstSecurityDatabase(xquery, "role", role);
-        }
     }
 
     public void removeUsers(String... usernames) {
@@ -46,6 +58,19 @@ public class SecurityHelper extends LoggingObject {
         xml += "<username>" + username + "</username>";
         xml += "<description>" + description + "</description>";
         xml += "<password>" + password + "</password>";
+        xml += buildXmlForRolesCollectionsAndPermissions(roleNames, permissionRoles, permissionCapabilities,
+                collections);
+        xml += "</user>";
+
+        String xquery = "declare variable $user external; if (sec:user-exists($user/username)) then () else ";
+        xquery += "let $perms := for $perm in $user/permissions/permission return xdmp:permission($perm/role, $perm/capability) ";
+        xquery += "return sec:create-user($user/username, $user/description, $user/password, $user/roles/role/text(), $perms, $user/collections/uri/text())";
+        evaluateAgainstSecurityDatabase(xquery, "user", xml);
+    }
+
+    private String buildXmlForRolesCollectionsAndPermissions(String[] roleNames, String[] permissionRoles,
+            String[] permissionCapabilities, String[] collections) {
+        String xml = "";
         if (roleNames != null) {
             xml += "<roles>";
             for (String role : roleNames) {
@@ -70,11 +95,7 @@ public class SecurityHelper extends LoggingObject {
             }
             xml += "</permissions>";
         }
-        xml += "</user>";
-        String xquery = "declare variable $user external; if (sec:user-exists($user/username)) then () else ";
-        xquery += "let $perms := for $perm in $user/permissions/permission return xdmp:permission($perm/role, $perm/capability) ";
-        xquery += "return sec:create-user($user/username, $user/description, $user/password, $user/roles/role/text(), $perms, $user/collections/uri/text())";
-        evaluateAgainstSecurityDatabase(xquery, "user", xml);
+        return xml;
     }
 
     public String evaluateAgainstSecurityDatabase(String xquery, String... vars) {
