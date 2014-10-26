@@ -11,8 +11,8 @@ class CreateRoleTask extends SecurityTask {
     String[] permissionCapabilities
     String[] collections
 
-    String[] privilegeActionNames
-    String[] privilegeKinds
+    String[] executePrivilegeActions
+    String[] uriPrivilegeActions
 
     boolean removeRole = true
 
@@ -26,9 +26,15 @@ class CreateRoleTask extends SecurityTask {
 
         h.createRole(roleName, description, roleNames, permissionRoles, permissionCapabilities, collections)
 
-        if (privilegeActionNames != null) {
-            for (int i = 0; i < privilegeActionNames.length; i++) {
-                h.setPrivilegeForRole(roleName, "http://marklogic.com/xdmp/privileges/" + privilegeActionNames[i], privilegeKinds[i])
+        if (executePrivilegeActions != null) {
+            for (String action : executePrivilegeActions) {
+                h.setPrivilegeForRole(roleName, action, "execute")
+            }
+        }
+        
+        if (uriPrivilegeActions != null) {
+            for (String action : uriPrivilegeActions) {
+                h.setPrivilegeForRole(roleName, action, "uri")
             }
         }
     }
