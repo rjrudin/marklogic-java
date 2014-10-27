@@ -12,6 +12,7 @@ import org.springframework.util.FileCopyUtils;
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.FailedRequestException;
 import com.marklogic.client.admin.ExtensionLibrariesManager;
+import com.marklogic.client.admin.ExtensionLibraryDescriptor;
 import com.marklogic.client.admin.ExtensionMetadata;
 import com.marklogic.client.admin.NamespacesManager;
 import com.marklogic.client.admin.QueryOptionsManager;
@@ -20,6 +21,7 @@ import com.marklogic.client.admin.ResourceExtensionsManager.MethodParameters;
 import com.marklogic.client.admin.TransformExtensionsManager;
 import com.marklogic.client.configurer.Asset;
 import com.marklogic.client.configurer.DefaultModulesFinder;
+import com.marklogic.client.configurer.ExtensionLibraryDescriptorBuilder;
 import com.marklogic.client.configurer.FilenameUtil;
 import com.marklogic.client.configurer.Modules;
 import com.marklogic.client.configurer.ModulesFinder;
@@ -38,6 +40,11 @@ public class RestApiModulesLoader extends LoggingObject {
     private ExtensionMetadataProvider extensionMetadataProvider;
     private ModulesFinder modulesFinder;
     private ModulesManager modulesManager;
+    private ExtensionLibraryDescriptorBuilder extensionLibraryDescriptorBuilder;
+
+    public void setExtensionLibraryDescriptorBuilder(ExtensionLibraryDescriptorBuilder extensionLibraryDescriptorBuilder) {
+        this.extensionLibraryDescriptorBuilder = extensionLibraryDescriptorBuilder;
+    }
 
     public RestApiModulesLoader(DatabaseClient client) {
         this.client = client;
@@ -116,13 +123,25 @@ public class RestApiModulesLoader extends LoggingObject {
         ExtensionLibrariesManager libMgr = client.newServerConfigManager().newExtensionLibrariesManager();
         Format format = determineFormat(file);
         FileHandle h = new FileHandle(file);
-        String path = "/ext" + asset.getPath();
-        logger.info(String.format("Loading module at path %s from file %s", path, file.getAbsolutePath()));
-        try {
-            libMgr.write(path, h.withFormat(format));
-        } catch (FailedRequestException fre) {
-            logger.warn("Caught exception, retrying as binary file; exception message: " + fre.getMessage());
-            libMgr.write(path, h.withFormat(Format.BINARY));
+        if (extensionLibraryDescriptorBuilder != null) {
+            ExtensionLibraryDescriptor descriptor = extensionLibraryDescriptorBuilder.buildDescriptor(asset);
+            logger.info(String.format("Loading module at path %s from file %s", descriptor.getPath(),
+                    file.getAbsolutePath()));
+            try {
+                libMgr.write(descriptor, h.withFormat(format));
+            } catch (FailedRequestException fre) {
+                logger.warn("Caught exception, retrying as binary file; exception message: " + fre.getMessage());
+                libMgr.write(descriptor, h.withFormat(Format.BINARY));
+            }
+        } else {
+            String path = "/ext" + asset.getPath();
+            logger.info(String.format("Loading module at path %s from file %s", path, file.getAbsolutePath()));
+            try {
+                libMgr.write(path, h.withFormat(format));
+            } catch (FailedRequestException fre) {
+                logger.warn("Caught exception, retrying as binary file; exception message: " + fre.getMessage());
+                libMgr.write(path, h.withFormat(Format.BINARY));
+            }
         }
         modulesManager.saveLastInstalledTimestamp(file, new Date());
         return file;
