@@ -13,7 +13,7 @@ import com.marklogic.gradle.task.client.service.CreateResourceTask
 import com.marklogic.gradle.task.database.ClearContentDatabaseTask;
 import com.marklogic.gradle.task.database.ClearModulesTask;
 import com.marklogic.gradle.task.manage.ConfigureBitemporalTask
-import com.marklogic.gradle.task.manage.InstallAppTask
+import com.marklogic.gradle.task.manage.InstallPackagesTask
 import com.marklogic.gradle.task.manage.ManageConfig
 import com.marklogic.gradle.task.manage.MergeDatabasePackagesTask
 import com.marklogic.gradle.task.manage.MergeHttpServerPackagesTask
@@ -41,24 +41,24 @@ class MarkLogicPlugin implements Plugin<Project> {
         project.task("mlMergeDatabasePackages", type: MergeDatabasePackagesTask, group: group, dependsOn:"mlPrepareRestApiDependencies", description: "Merges together the database packages that are defined by a property on this task; the result is written to the build directory")
         project.task("mlMergeHttpServerPackages", type: MergeHttpServerPackagesTask, group: group, description:"Merges together the HTTP server packages that are defined by a property on this task; the result is written to the build directory")
 
-        project.task("mlInstallApp", type: InstallAppTask, group: group, dependsOn: [
+        project.task("mlInstallPackages", type: InstallPackagesTask, group: group, dependsOn: [
             "mlMergeDatabasePackages",
             "mlMergeHttpServerPackages"
-        ], description: "Installs the application's resources (servers and databases); does not load any modules").mustRunAfter("mlClearModules")
+        ], description: "Installs the application's packages (servers and databases); does not load any modules").mustRunAfter("mlClearModules")
 
-        project.task("mlPostInstallApp", group: group, description: "Add dependsOn to this task to add tasks after mlInstallApp finishes within mlDeploy").mustRunAfter("mlInstallApp")
+        project.task("mlPostInstallPackages", group: group, description: "Add dependsOn to this task to add tasks after mlInstallPackages finishes within mlDeploy").mustRunAfter("mlInstallPackages")
         
-        project.task("mlLoadModules", type: LoadModulesTask, group: group, dependsOn: "mlPrepareRestApiDependencies", description: "Loads modules from directories defined by mlAppConfig or via a property on this task").mustRunAfter(["mlPostInstallApp", "mlClearModules"])
+        project.task("mlLoadModules", type: LoadModulesTask, group: group, dependsOn: "mlPrepareRestApiDependencies", description: "Loads modules from directories defined by mlAppConfig or via a property on this task").mustRunAfter(["mlPostInstallPackages", "mlClearModules"])
 
         project.task("mlPostDeploy", group: group, description: "Add dependsOn to this to add tasks to mlDeploy").mustRunAfter("mlLoadModules")
         
         project.task("mlDeploy", group: group, dependsOn: [
             "mlClearModules",
-            "mlInstallApp",
-            "mlPostInstallApp",
+            "mlInstallPackages",
+            "mlPostInstallPackages",
             "mlLoadModules",
             "mlPostDeploy"
-        ], description: "Deploys the application by first clearing the modules database (if it exists), installing the app, and then loading modules")
+        ], description: "Deploys the application by first clearing the modules database (if it exists), installing packages, and then loading modules")
 
         project.task("mlReloadModules", group: group, dependsOn: [
             "mlClearModules",
