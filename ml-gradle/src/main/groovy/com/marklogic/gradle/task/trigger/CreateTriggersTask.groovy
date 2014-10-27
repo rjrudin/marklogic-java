@@ -2,7 +2,7 @@ package com.marklogic.gradle.task.trigger
 
 import org.gradle.api.tasks.TaskAction
 
-import com.marklogic.gradle.MarkLogicTask
+import com.marklogic.gradle.task.MarkLogicTask;
 import com.marklogic.gradle.xcc.XccHelper
 
 class CreateTriggersTask extends MarkLogicTask {

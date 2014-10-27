@@ -2,7 +2,6 @@ package com.marklogic.gradle.task
 
 import org.gradle.api.tasks.TaskAction
 
-import com.marklogic.gradle.MarkLogicTask
 import com.marklogic.gradle.xcc.XccHelper
 
 /**

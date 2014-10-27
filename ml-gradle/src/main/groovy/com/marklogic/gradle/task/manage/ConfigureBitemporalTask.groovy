@@ -3,7 +3,7 @@ package com.marklogic.gradle.task.manage
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-import com.marklogic.gradle.MarkLogicTask;
+import com.marklogic.gradle.task.MarkLogicTask;
 import com.marklogic.gradle.xcc.XccHelper
 
 class ConfigureBitemporalTask extends MarkLogicTask {

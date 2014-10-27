@@ -4,7 +4,6 @@ import org.gradle.api.tasks.TaskAction
 import org.springframework.core.io.ClassPathResource
 import org.springframework.util.FileCopyUtils
 
-import com.marklogic.gradle.MarkLogicTask
 import com.marklogic.gradle.xcc.XccHelper
 
 class UninstallAppTask extends MarkLogicTask {

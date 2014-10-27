@@ -4,8 +4,8 @@ import groovyx.net.http.HttpResponseDecorator
 
 import org.gradle.api.Project
 
-import com.marklogic.gradle.MarkLogicTask
 import com.marklogic.gradle.RestHelper
+import com.marklogic.gradle.task.MarkLogicTask;
 
 class ManageTask extends MarkLogicTask {
 

@@ -9,8 +9,8 @@ import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.DatabaseClientFactory;
 import com.marklogic.client.DatabaseClientFactory.Authentication;
 import com.marklogic.gradle.AppConfig;
-import com.marklogic.gradle.MarkLogicTask;
 import com.marklogic.gradle.RestHelper
+import com.marklogic.gradle.task.MarkLogicTask;
 import com.marklogic.gradle.task.manage.ManageConfig;
 
 /**
