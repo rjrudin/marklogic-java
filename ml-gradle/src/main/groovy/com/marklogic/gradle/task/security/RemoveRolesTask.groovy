@@ -9,5 +9,6 @@ class RemoveRolesTask extends SecurityTask {
     @TaskAction
     void removeRoles() {
         getSecurityHelper().removeRoles(roles)
+        println "Finished removing roles ${roles}\n"
     }
 }

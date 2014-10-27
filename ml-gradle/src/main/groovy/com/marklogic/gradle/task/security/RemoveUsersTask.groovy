@@ -9,6 +9,6 @@ class RemoveUsersTask extends SecurityTask {
     @TaskAction
     void removeUsers() {
         getSecurityHelper().removeUsers(usernames)
-        println "Finished removing users\n"
+        println "Finished removing users ${usernames}\n"
     }
 }
