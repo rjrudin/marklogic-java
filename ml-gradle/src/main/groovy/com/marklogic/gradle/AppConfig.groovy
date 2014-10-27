@@ -11,6 +11,7 @@ class AppConfig {
     Integer xdbcPort = 8101
     Integer testRestPort
     Integer testXdbcPort
+    Integer modulesXdbcPort
     
     String defaultConfigPath = "src/main/xqy"
     List<String> configPaths

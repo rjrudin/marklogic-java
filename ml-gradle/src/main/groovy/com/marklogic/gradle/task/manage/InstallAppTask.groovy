@@ -70,7 +70,10 @@ class InstallAppTask extends ManageTask {
         if (installTestResources) {
             rh.addXdbcServer(packageName, groupName, appName, mgr.getTestContentDatabaseName(), appConfig.getTestXdbcPort(), xdbcServerFilename)
         }
-
+        if (appConfig.getModulesXdbcPort() != null && appConfig.getModulesXdbcPort() > 0) {
+            rh.addModulesXdbcServer(appName, appConfig.getModulesXdbcPort())
+        }
+        
         rh.installPackage(packageName, format)
         println "Finished installing application ${appName}\n"
     }

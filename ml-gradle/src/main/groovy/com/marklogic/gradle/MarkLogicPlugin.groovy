@@ -116,7 +116,12 @@ class MarkLogicPlugin implements Plugin<Project> {
             println "App test XDBC port: " + port
             appConfig.setTestXdbcPort(Integer.parseInt(port))
         }
-
+        if (project.hasProperty("mlModulesXdbcPort")) {
+            def port = project.property("mlModulesXdbcPort")
+            println "App modules XDBC port: " + port
+            appConfig.setModulesXdbcPort(Integer.parseInt(port))
+        }
+        
         project.extensions.add("mlAppConfig", appConfig)
     }
 
