@@ -3,7 +3,7 @@ package com.marklogic.gradle
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-import com.marklogic.gradle.task.DeleteLastConfiguredTimestampsFileTask
+import com.marklogic.gradle.task.DeleteModuleTimestampsFileTask
 import com.marklogic.gradle.task.UninstallAppTask
 import com.marklogic.gradle.task.client.LoadModulesTask
 import com.marklogic.gradle.task.client.PrepareRestApiDependenciesTask
@@ -30,11 +30,11 @@ class MarkLogicPlugin implements Plugin<Project> {
 
         String group = "MarkLogic"
 
-        project.task("mlDeleteLastConfigured", type: DeleteLastConfiguredTimestampsFileTask, group: group, description: "Delete the properties file in the build directory that keeps track of when each module was last installed.")
+        project.task("mlDeleteModuleTimestampsFile", type: DeleteModuleTimestampsFileTask, group: group, description: "Delete the properties file in the build directory that keeps track of when each module was last loaded.")
         project.task("mlUninstallApp", type: UninstallAppTask, group: group, description: "Delete all application resources; this currently has a bug that may require manually deleting the content forest")
 
         project.task("mlClearContentDatabase", type: ClearContentDatabaseTask, group: group, description: "Deletes all or a collection of documents from the content database")
-        project.task("mlClearModules", type: ClearModulesTask, group: group, dependsOn: "mlDeleteLastConfigured", description: "Deletes potentially all of the documents in the modules database; has a property for excluding documents from deletion")
+        project.task("mlClearModules", type: ClearModulesTask, group: group, dependsOn: "mlDeleteModuleTimestampsFile", description: "Deletes potentially all of the documents in the modules database; has a property for excluding documents from deletion")
 
         project.task("mlPrepareRestApiDependencies", type: PrepareRestApiDependenciesTask, group: group, dependsOn: project.configurations["mlRestApi"], description: "Downloads (if necessary) and unzips in the build directory all mlRestApi dependencies")
 
