@@ -5,7 +5,7 @@ import org.gradle.api.tasks.TaskAction
 class CreateRoleTask extends SecurityTask {
 
     String roleName
-    String description
+    String roleDescription
     String[] roleNames
     String[] permissionRoles
     String[] permissionCapabilities
@@ -24,7 +24,7 @@ class CreateRoleTask extends SecurityTask {
             h.removeRoles(roleName)
         }
 
-        h.createRole(roleName, description, roleNames, permissionRoles, permissionCapabilities, collections)
+        h.createRole(roleName, roleDescription, roleNames, permissionRoles, permissionCapabilities, collections)
 
         if (executePrivilegeActions != null) {
             for (String action : executePrivilegeActions) {

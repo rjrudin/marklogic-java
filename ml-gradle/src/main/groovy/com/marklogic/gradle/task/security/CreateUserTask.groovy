@@ -6,7 +6,7 @@ import org.gradle.api.tasks.TaskAction
 class CreateUserTask extends SecurityTask {
 
     String username
-    String description
+    String userDescription
     String password
     String[] roleNames
     String[] collections
@@ -23,6 +23,6 @@ class CreateUserTask extends SecurityTask {
         }
 
         println "Creating user ${username}"
-        h.createUser(username, password, password, roleNames, permissionRoles, permissionCapabilities, collections)
+        h.createUser(username, userDescription, password, roleNames, permissionRoles, permissionCapabilities, collections)
     }
 }
