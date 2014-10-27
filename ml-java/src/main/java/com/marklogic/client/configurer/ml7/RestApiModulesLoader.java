@@ -30,6 +30,7 @@ import com.marklogic.client.configurer.PropertiesModuleManager;
 import com.marklogic.client.configurer.metadata.ExtensionMetadataAndParams;
 import com.marklogic.client.configurer.metadata.ExtensionMetadataProvider;
 import com.marklogic.client.configurer.metadata.XmlExtensionMetadataProvider;
+import com.marklogic.client.helper.DatabaseClientProvider;
 import com.marklogic.client.io.FileHandle;
 import com.marklogic.client.io.Format;
 import com.marklogic.util.LoggingObject;
@@ -44,6 +45,10 @@ public class RestApiModulesLoader extends LoggingObject {
 
     public void setExtensionLibraryDescriptorBuilder(ExtensionLibraryDescriptorBuilder extensionLibraryDescriptorBuilder) {
         this.extensionLibraryDescriptorBuilder = extensionLibraryDescriptorBuilder;
+    }
+
+    public RestApiModulesLoader(DatabaseClientProvider databaseClientProvider) {
+        this(databaseClientProvider.getDatabaseClient());
     }
 
     public RestApiModulesLoader(DatabaseClient client) {
