@@ -30,6 +30,12 @@
 					<invalid-values>ignore</invalid-values>
 				</range-field-index>
 			</range-field-indexes>
+			<element-word-query-throughs>
+				<element-word-query-through>
+					<namespace-uri>urn:second:namespace</namespace-uri>
+					<localname>SecondElement</localname>
+				</element-word-query-through>
+			</element-word-query-throughs>
 			<fields>
 				<field>
 					<field-name>secondField</field-name>

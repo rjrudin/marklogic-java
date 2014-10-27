@@ -51,6 +51,12 @@
 					<collation>http://marklogic.com/collation/codepoint</collation>
 				</element-word-lexicon>
 			</element-word-lexicons>
+			<element-word-query-throughs>
+				<element-word-query-through>
+					<namespace-uri>urn:first:namespace</namespace-uri>
+					<localname>FirstElement</localname>
+				</element-word-query-through>
+			</element-word-query-throughs>
 		</package-database-properties>
 		<links>
 			<schema-database>my-schemas-database</schema-database>

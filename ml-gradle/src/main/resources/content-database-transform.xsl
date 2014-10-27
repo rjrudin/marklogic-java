@@ -38,6 +38,13 @@
 		</xsl:copy>
 	</xsl:template>
 
+	<xsl:template match="db:element-word-query-throughs">
+		<xsl:copy>
+			<xsl:apply-templates />
+			<xsl:apply-templates select="$mergePackage/db:config/db:package-database-properties/db:element-word-query-throughs/db:element-word-query-through" />
+		</xsl:copy>
+	</xsl:template>
+
 	<xsl:template match="db:range-element-indexes">
 		<xsl:copy>
 			<xsl:apply-templates />

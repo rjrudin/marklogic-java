@@ -52,7 +52,10 @@ public class MergeDatabasePackagesTest extends XmlHelper {
                 + "and db:localname = 'SomeElement' and db:collation = 'http://marklogic.com/collation/codepoint']");
         db.assertElementExists("//db:element-word-lexicons/db:element-word-lexicon[db:namespace-uri = 'urn:some:namespace2' "
                 + "and db:localname = 'AnotherElement' and db:collation = 'http://marklogic.com/collation/codepoint']");
-        
+
+        db.assertElementExists("//db:element-word-query-throughs/db:element-word-query-through[db:namespace-uri = 'urn:first:namespace' and db:localname = 'FirstElement']");
+        db.assertElementExists("//db:element-word-query-throughs/db:element-word-query-through[db:namespace-uri = 'urn:second:namespace' and db:localname = 'SecondElement']");
+
         db.prettyPrint();
     }
 
