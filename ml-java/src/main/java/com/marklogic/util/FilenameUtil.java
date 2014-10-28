@@ -1,4 +1,4 @@
-package com.marklogic.client.configurer;
+package com.marklogic.util;
 
 public abstract class FilenameUtil {
 

@@ -1,9 +1,14 @@
-package com.marklogic.client.configurer;
+package com.marklogic.client.modulesloader.impl;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.marklogic.client.modulesloader.Asset;
+import com.marklogic.client.modulesloader.Modules;
+import com.marklogic.client.modulesloader.ModulesFinder;
+import com.marklogic.util.FilenameUtil;
 
 public class DefaultModulesFinder implements ModulesFinder {
 

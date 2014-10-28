@@ -13,12 +13,12 @@ class AppConfig {
     Integer testXdbcPort
     Integer modulesXdbcPort
     
-    String defaultConfigPath = "src/main/xqy"
-    List<String> configPaths
+    String defaultModulePath = "src/main/xqy"
+    List<String> modulePaths
     
     public AppConfig() {
-        configPaths = new ArrayList<String>()
-        configPaths.add(defaultConfigPath)
+        modulePaths = new ArrayList<String>()
+        modulePaths.add(defaultModulePath)
     }
     
     public String getXccUrl() {

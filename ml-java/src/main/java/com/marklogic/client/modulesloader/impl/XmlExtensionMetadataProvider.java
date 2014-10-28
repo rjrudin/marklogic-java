@@ -1,4 +1,4 @@
-package com.marklogic.client.configurer.metadata;
+package com.marklogic.client.modulesloader.impl;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,6 +12,8 @@ import org.jdom2.output.XMLOutputter;
 import com.marklogic.client.admin.ExtensionMetadata;
 import com.marklogic.client.admin.MethodType;
 import com.marklogic.client.admin.ResourceExtensionsManager.MethodParameters;
+import com.marklogic.client.modulesloader.ExtensionMetadataAndParams;
+import com.marklogic.client.modulesloader.ExtensionMetadataProvider;
 import com.marklogic.util.LoggingObject;
 
 public class XmlExtensionMetadataProvider extends LoggingObject implements ExtensionMetadataProvider {

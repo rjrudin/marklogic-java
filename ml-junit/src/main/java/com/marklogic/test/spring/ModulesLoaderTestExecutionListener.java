@@ -12,8 +12,9 @@ import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 import com.marklogic.client.DatabaseClient;
-import com.marklogic.client.configurer.ml7.RestApiModulesLoader;
 import com.marklogic.client.helper.DatabaseClientProvider;
+import com.marklogic.client.modulesloader.ModulesLoader;
+import com.marklogic.client.modulesloader.impl.DefaultModulesLoader;
 
 /**
  * Used to automatically load new/modified modules before a test runs.
@@ -31,26 +32,30 @@ public class ModulesLoaderTestExecutionListener extends AbstractTestExecutionLis
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {
         if (!initialized) {
-            List<ModulesLoader> list = null;
+            List<ModulesPath> pathList = null;
 
-            ModulesLoaders loaders = testContext.getTestClass().getAnnotation(ModulesLoaders.class);
-            if (loaders != null) {
-                list = Arrays.asList(loaders.configurers());
+            ModulesPaths paths = testContext.getTestClass().getAnnotation(ModulesPaths.class);
+            if (paths != null) {
+                pathList = Arrays.asList(paths.paths());
             } else {
-                ModulesLoader loader = testContext.getTestClass().getAnnotation(ModulesLoader.class);
-                if (loader != null) {
-                    list = Arrays.asList(loader);
+                ModulesPath path = testContext.getTestClass().getAnnotation(ModulesPath.class);
+                if (path != null) {
+                    pathList = Arrays.asList(path);
                 }
             }
 
-            if (list != null) {
-                RestApiModulesLoader restApiModulesLoader = buildRestApiModulesLoader(testContext);
-                for (ModulesLoader loader : list) {
+            if (pathList != null) {
+                ModulesLoader modulesLoader = buildModulesLoader(testContext);
+
+                DatabaseClientProvider p = testContext.getApplicationContext().getBean(DatabaseClientProvider.class);
+                DatabaseClient client = p.getDatabaseClient();
+
+                for (ModulesPath loader : pathList) {
                     String baseDir = loader.baseDir();
                     if (logger.isInfoEnabled()) {
                         logger.info(String.format("Loading modules, using base directory of %s", baseDir));
                     }
-                    Set<File> loadedModules = restApiModulesLoader.loadModules(new File(baseDir));
+                    Set<File> loadedModules = modulesLoader.loadModules(new File(baseDir), client);
                     if (loadedModules != null) {
                         testContext.getApplicationContext().publishEvent(new ModulesLoadedEvent(loadedModules));
                     }
@@ -61,22 +66,19 @@ public class ModulesLoaderTestExecutionListener extends AbstractTestExecutionLis
     }
 
     /**
-     * Will first check for a RestApiModulesLoader in the Spring container.
+     * Will first check for a ModulesLoader in the Spring container.
      * 
      * @param testContext
      * @return
      */
-    protected RestApiModulesLoader buildRestApiModulesLoader(TestContext testContext) {
-        Map<String, RestApiModulesLoader> loaders = testContext.getApplicationContext().getBeansOfType(
-                RestApiModulesLoader.class);
+    protected ModulesLoader buildModulesLoader(TestContext testContext) {
+        Map<String, DefaultModulesLoader> loaders = testContext.getApplicationContext().getBeansOfType(
+                DefaultModulesLoader.class);
         if (loaders.size() == 1) {
             String name = loaders.keySet().iterator().next();
-            logger.info("Found RestApiModulesLoader with name " + name + ", will use that for loading modules");
+            logger.info("Found ModulesLoader with name " + name + ", will use that for loading modules");
             return loaders.get(name);
         }
-
-        DatabaseClientProvider p = testContext.getApplicationContext().getBean(DatabaseClientProvider.class);
-        DatabaseClient client = p.getDatabaseClient();
-        return new RestApiModulesLoader(client);
+        return new DefaultModulesLoader();
     }
 }

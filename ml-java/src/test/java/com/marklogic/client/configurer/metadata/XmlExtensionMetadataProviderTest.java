@@ -10,6 +10,8 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.marklogic.client.admin.MethodType;
 import com.marklogic.client.admin.ResourceExtensionsManager.MethodParameters;
+import com.marklogic.client.modulesloader.ExtensionMetadataAndParams;
+import com.marklogic.client.modulesloader.impl.XmlExtensionMetadataProvider;
 
 public class XmlExtensionMetadataProviderTest extends Assert {
 

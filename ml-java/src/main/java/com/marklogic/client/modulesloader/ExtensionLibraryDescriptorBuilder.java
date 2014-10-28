@@ -1,10 +1,10 @@
-package com.marklogic.client.configurer;
+package com.marklogic.client.modulesloader;
 
 import com.marklogic.client.admin.ExtensionLibraryDescriptor;
 
 /**
- * Main purpose of this interface is to provide an extension point in RestApiModulesLoader for
- * setting document permissions for a particular asset.
+ * Main purpose of this interface is to provide an extension point for setting document permissions
+ * for a particular asset.
  */
 public interface ExtensionLibraryDescriptorBuilder {
 

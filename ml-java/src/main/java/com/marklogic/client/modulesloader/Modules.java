@@ -1,4 +1,4 @@
-package com.marklogic.client.configurer;
+package com.marklogic.client.modulesloader;
 
 import java.io.File;
 import java.util.List;

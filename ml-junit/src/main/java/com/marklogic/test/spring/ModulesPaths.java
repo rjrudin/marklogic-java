@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Inherited
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ModulesLoaders {
+public @interface ModulesPaths {
 
-    ModulesLoader[] configurers();
+    ModulesPath[] paths();
 }

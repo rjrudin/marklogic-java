@@ -1,4 +1,4 @@
-package com.marklogic.client.configurer.ml7;
+package com.marklogic.client.modulesloader.impl;
 
 import java.io.File;
 import java.io.FileReader;
@@ -19,46 +19,36 @@ import com.marklogic.client.admin.QueryOptionsManager;
 import com.marklogic.client.admin.ResourceExtensionsManager;
 import com.marklogic.client.admin.ResourceExtensionsManager.MethodParameters;
 import com.marklogic.client.admin.TransformExtensionsManager;
-import com.marklogic.client.configurer.Asset;
-import com.marklogic.client.configurer.DefaultModulesFinder;
-import com.marklogic.client.configurer.ExtensionLibraryDescriptorBuilder;
-import com.marklogic.client.configurer.FilenameUtil;
-import com.marklogic.client.configurer.Modules;
-import com.marklogic.client.configurer.ModulesFinder;
-import com.marklogic.client.configurer.ModulesManager;
-import com.marklogic.client.configurer.PropertiesModuleManager;
-import com.marklogic.client.configurer.metadata.ExtensionMetadataAndParams;
-import com.marklogic.client.configurer.metadata.ExtensionMetadataProvider;
-import com.marklogic.client.configurer.metadata.XmlExtensionMetadataProvider;
-import com.marklogic.client.helper.DatabaseClientProvider;
 import com.marklogic.client.io.FileHandle;
 import com.marklogic.client.io.Format;
+import com.marklogic.client.modulesloader.Asset;
+import com.marklogic.client.modulesloader.ExtensionLibraryDescriptorBuilder;
+import com.marklogic.client.modulesloader.ExtensionMetadataAndParams;
+import com.marklogic.client.modulesloader.ExtensionMetadataProvider;
+import com.marklogic.client.modulesloader.Modules;
+import com.marklogic.client.modulesloader.ModulesFinder;
+import com.marklogic.client.modulesloader.ModulesManager;
+import com.marklogic.util.FilenameUtil;
 import com.marklogic.util.LoggingObject;
 
-public class RestApiModulesLoader extends LoggingObject {
+public class DefaultModulesLoader extends LoggingObject implements com.marklogic.client.modulesloader.ModulesLoader {
 
     private DatabaseClient client;
+
     private ExtensionMetadataProvider extensionMetadataProvider;
     private ModulesFinder modulesFinder;
     private ModulesManager modulesManager;
     private ExtensionLibraryDescriptorBuilder extensionLibraryDescriptorBuilder;
 
-    public void setExtensionLibraryDescriptorBuilder(ExtensionLibraryDescriptorBuilder extensionLibraryDescriptorBuilder) {
-        this.extensionLibraryDescriptorBuilder = extensionLibraryDescriptorBuilder;
-    }
-
-    public RestApiModulesLoader(DatabaseClientProvider databaseClientProvider) {
-        this(databaseClientProvider.getDatabaseClient());
-    }
-
-    public RestApiModulesLoader(DatabaseClient client) {
-        this.client = client;
+    public DefaultModulesLoader() {
         this.extensionMetadataProvider = new XmlExtensionMetadataProvider();
         this.modulesFinder = new DefaultModulesFinder();
         this.modulesManager = new PropertiesModuleManager();
     }
 
-    public Set<File> loadModules(File baseDir) {
+    public Set<File> loadModules(File baseDir, DatabaseClient client) {
+        setDatabaseClient(client);
+
         modulesManager.initialize();
 
         Modules files = modulesFinder.findModules(baseDir);
@@ -111,7 +101,8 @@ public class RestApiModulesLoader extends LoggingObject {
      * 
      * @param baseDir
      */
-    public void simulateLoadingOfAllAssets(File baseDir) {
+    public void simulateLoadingOfAllAssets(File baseDir, DatabaseClient client) {
+        setDatabaseClient(client);
         Date now = new Date();
         modulesManager.initialize();
         Modules files = modulesFinder.findModules(baseDir);
@@ -255,6 +246,10 @@ public class RestApiModulesLoader extends LoggingObject {
         return name.substring(0, pos);
     }
 
+    public void setDatabaseClient(DatabaseClient client) {
+        this.client = client;
+    }
+
     public void setExtensionMetadataProvider(ExtensionMetadataProvider extensionMetadataProvider) {
         this.extensionMetadataProvider = extensionMetadataProvider;
     }
@@ -265,5 +260,9 @@ public class RestApiModulesLoader extends LoggingObject {
 
     public void setConfigurationFilesManager(ModulesManager configurationFilesManager) {
         this.modulesManager = configurationFilesManager;
+    }
+
+    public void setExtensionLibraryDescriptorBuilder(ExtensionLibraryDescriptorBuilder extensionLibraryDescriptorBuilder) {
+        this.extensionLibraryDescriptorBuilder = extensionLibraryDescriptorBuilder;
     }
 }

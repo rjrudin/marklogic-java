@@ -1,12 +1,12 @@
 package com.marklogic.gradle.task.client
 
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.tasks.TaskAction
 import org.gradle.api.internal.project.DefaultAntBuilder
+import org.gradle.api.tasks.TaskAction
 
 /**
  * Purpose of this task is to unzip each restApi dependency to the build directory and then register the path of each
- * unzipped directory in mlConfigPaths. 
+ * unzipped directory in AppConfig.modulePaths. 
  */
 class PrepareRestApiDependenciesTask extends ClientTask {
 
@@ -17,7 +17,7 @@ class PrepareRestApiDependenciesTask extends ClientTask {
             Configuration config = getProject().getConfigurations().getAt(configurationName)
             if (config.files) {
                 println "Found " + configurationName + " configuration, will unzip all of its dependencies to build/mlRestApi"
-                
+
                 def buildDir = new File("build/mlRestApi")
                 buildDir.delete()
                 buildDir.mkdirs()
@@ -29,22 +29,22 @@ class PrepareRestApiDependenciesTask extends ClientTask {
                     ant.unzip(src: f, dest: buildDir, overwrite: "true")
                 }
 
-                List<String> configPaths = getAppConfig().configPaths
-                List<String> newConfigPaths = new ArrayList<String>()
-                
+                List<String> modulePaths = getAppConfig().modulePaths
+                List<String> newModulePaths = new ArrayList<String>()
+
                 for (dir in buildDir.listFiles()) {
                     if (dir.isDirectory()) {
-                        newConfigPaths.add(dir.getAbsolutePath())
+                        newModulePaths.add(dir.getAbsolutePath())
                     }
                 }
-                
-                // The config paths of the dependencies should be before the original config paths 
-                newConfigPaths.addAll(configPaths)
-                getAppConfig().setConfigPaths(newConfigPaths)
-                
-                println "Finished unzipping mlRestApi dependencies; will now include modules at " + getAppConfig().configPaths + "\n"
+
+                // The config paths of the dependencies should be before the original config paths
+                newModulePaths.addAll(modulePaths)
+                getAppConfig().setModulePaths(newModulePaths)
+
+                println "Finished unzipping mlRestApi dependencies; will now include modules at " + getAppConfig().modulePaths + "\n"
             } else {
-            println "No mlRestApi dependencies found, so no preparation of dependencies required\n"
+                println "No mlRestApi dependencies found, so no preparation of dependencies required\n"
             }
         } else {
             println "No mlRestApi configuration found, so no preparation of mlRestApi dependencies required\n"

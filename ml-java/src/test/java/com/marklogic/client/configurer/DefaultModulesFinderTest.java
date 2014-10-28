@@ -8,6 +8,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
+import com.marklogic.client.modulesloader.Asset;
+import com.marklogic.client.modulesloader.Modules;
+import com.marklogic.client.modulesloader.ModulesFinder;
+import com.marklogic.client.modulesloader.impl.DefaultModulesFinder;
+
 public class DefaultModulesFinderTest extends Assert {
 
     private ModulesFinder sut = new DefaultModulesFinder();

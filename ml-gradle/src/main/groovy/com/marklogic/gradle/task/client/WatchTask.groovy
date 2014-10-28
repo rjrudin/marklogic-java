@@ -10,14 +10,14 @@ class WatchTask extends JavaExec {
     @TaskAction
     @Override
     public void exec() {
-        setMain("com.marklogic.client.configurer.ml7.ModulesWatcher")
+        setMain("com.marklogic.client.modulesloader.ModulesWatcher")
         setClasspath(getProject().sourceSets.main.runtimeClasspath)
 
         AppConfig config = getProject().property("mlAppConfig")
         def username = config.getUsername() ? config.getUsername() : getProject().property("mlUsername")
         def password = config.getPassword() ? config.getPassword() : getProject().property("mlPassword")
         setArgs([
-            config.getConfigPaths().join(","),
+            config.getModulePaths().join(","),
             config.getHost(),
             config.getRestPort(),
             username,
