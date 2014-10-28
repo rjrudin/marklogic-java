@@ -40,9 +40,10 @@ public class ModulesWatcher {
 
         ModulesLoader loader = null;
         if (args.length > 5) {
-            logger.info("Using ModulesLoader implementation class: " + args[5]);
+            logger.info("Using " + args[5] + " to load modules");
             loader = (DefaultModulesLoader) Class.forName(args[5]).newInstance();
         } else {
+            logger.info("Using " + DefaultModulesLoader.class.getName() + " to load modules");
             loader = new DefaultModulesLoader();
         }
 

@@ -1,11 +1,14 @@
 package com.marklogic.gradle.task.client
 
-import org.gradle.api.tasks.JavaExec;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.TaskAction
 
-import com.marklogic.gradle.AppConfig;
+import com.marklogic.client.modulesloader.impl.DefaultModulesLoader
+import com.marklogic.gradle.AppConfig
 
 class WatchTask extends JavaExec {
+
+    String modulesLoaderClassName = DefaultModulesLoader.class.getName()
 
     @TaskAction
     @Override
@@ -21,7 +24,8 @@ class WatchTask extends JavaExec {
             config.getHost(),
             config.getRestPort(),
             username,
-            password
+            password,
+            modulesLoaderClassName
         ])
 
         super.exec()
