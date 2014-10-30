@@ -24,4 +24,12 @@ class AppConfig {
     public String getXccUrl() {
         return "xcc://${username}:${password}@${host}:${xdbcPort}"
     }
+    
+    public String getTestXccUrl() {
+        return "xcc://${username}:${password}@${host}:${testXdbcPort}"
+    }
+    
+    public String getModulesXccUrl() {
+        return "xcc://${username}:${password}@${host}:${modulesXdbcPort}"
+    }
 }

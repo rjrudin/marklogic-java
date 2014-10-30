@@ -10,9 +10,13 @@ import com.marklogic.gradle.xcc.XccHelper
 class XccTask extends MarkLogicTask {
 
     String xquery
-
+    String xccUrl
+    
     @TaskAction
     void executeXcc() {
-        new XccHelper(getDefaultXccUrl()).executeXquery(xquery)
+        if (!xccUrl) {
+            xccUrl = getDefaultXccUrl()
+        }
+        new XccHelper(xccUrl).executeXquery(xquery)
     }
 }
