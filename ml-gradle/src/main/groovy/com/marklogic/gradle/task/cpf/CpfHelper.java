@@ -29,33 +29,34 @@ public class CpfHelper extends LoggingObject {
 
         String xquery = "declare variable $name external; declare variable $description external; ";
         xquery += "declare variable $scope external; declare variable $scope-uri external; declare variable $scope-depth external; ";
-        xquery += "declare variable $modules-database-name external; declare variable $pipelines external; declare variable $permissions external; ";
-        xquery += "dom:create($name, $description, ";
-        xquery += "dom:domain-scope($scope, $scope-uri, if ($scope-uri = 'directory') then $scope-depth else ()), ";
-        xquery += "dom:evaluation-context(xdmp:database($modules-database-name), '/'), ";
-        xquery += "for $name in $pipelines/element()/fn:string() return p:get($name)/p:pipeline-id, ";
-        xquery += "for $perm in $permissions return xdmp:permission($perm/role, $perm/capability))";
+        xquery += "declare variable $modules-database-name external; declare variable $pipelines external; declare variable $permissions-xml external; ";
+        xquery += "let $domain-id := try {fn:data(dom:get($name)/dom:domain-id) } catch ($e) {()} ";
+        xquery += "let $domain-scope := dom:domain-scope($scope, $scope-uri, if ($scope-uri = 'directory') then $scope-depth else ()) ";
+        xquery += "let $domain-context := dom:evaluation-context(xdmp:database($modules-database-name), '/') ";
+        xquery += "let $pipeline-ids := for $name in $pipelines/element()/fn:string() return xs:unsignedLong(p:get($name)/p:pipeline-id) ";
+        xquery += "let $permissions := for $perm in $permissions-xml return xdmp:permission($perm/role, $perm/capability) ";
+        xquery += "return if ($domain-id) then (dom:set-description($name, $description), dom:set-domain-scope($name, $domain-scope), ";
+        xquery += "dom:set-evaluation-context($name, $domain-context), dom:set-pipelines($name, $pipeline-ids), dom:set-permissions($name, $permissions)) ";
+        xquery += "else dom:create($name, $description, $domain-scope, $domain-context, $pipeline-ids, $permissions)";
 
         evaluateAgainstTriggersDatabase(xquery, "name", name, "description", description, "scope", scope, "scope-uri",
                 scopeUri, "scope-depth", scopeDepth, "modules-database-name", modulesDatabaseName, "pipelines",
-                pipelinesXml, "permissions", buildPermissionsXml(permissions));
+                pipelinesXml, "permissions-xml", buildPermissionsXml(permissions));
     }
 
     public void createDomainConfiguration(String restartUser, String modulesDatabaseName, String defaultDomainName,
             String[] permissions) {
-        // There's not a "does the configuration exist?" function so have to resort to a try/catch
         String xquery = "declare variable $restart-user external; declare variable $modules-database-name external; ";
-        xquery += "declare variable $default-domain-name external; declare variable $permissions external; ";
+        xquery += "declare variable $default-domain-name external; declare variable $permissions-xml external; ";
+        xquery += "let $config := try {dom:configuration-get()} catch ($e) {()} ";
+        xquery += "let $context := dom:evaluation-context(xdmp:database($modules-database-name), '/') ";
+        xquery += "let $permissions := for $perm in $permissions-xml return xdmp:permission($perm/role, $perm/capability) ";
         xquery += "let $domain-id := fn:data(dom:get($default-domain-name)/dom:domain-id)";
-        xquery += "return try { dom:configuration-get(), dom:configuration-set-default-domain($domain-id) } ";
-        xquery += "catch ($err) {";
-        xquery += "dom:configuration-create($restart-user, ";
-        xquery += "dom:evaluation-context(xdmp:database($modules-database-name), '/'), ";
-        xquery += "fn:data(dom:get($default-domain-name)/dom:domain-id), ";
-        xquery += "for $perm in $permissions return xdmp:permission($perm/role, $perm/capability))}";
-
+        xquery += "return if ($config) then (dom:configuration-set-restart-user($restart-user), dom:configuration-set-evaluation-context($context), ";
+        xquery += "dom:configuration-set-default-domain($domain-id), dom:configuration-set-permissions($permissions)) ";
+        xquery += "else dom:configuration-create($restart-user, $context, $domain-id, $permissions)";
         evaluateAgainstTriggersDatabase(xquery, "restart-user", restartUser, "modules-database-name",
-                modulesDatabaseName, "default-domain-name", defaultDomainName, "permissions",
+                modulesDatabaseName, "default-domain-name", defaultDomainName, "permissions-xml",
                 buildPermissionsXml(permissions));
     }
 
