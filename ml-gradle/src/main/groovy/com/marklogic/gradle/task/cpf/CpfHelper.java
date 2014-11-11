@@ -13,7 +13,7 @@ public class CpfHelper extends LoggingObject {
         this.triggersDatabaseName = triggersDatabaseName;
     }
 
-    public void installMarkLogicPipeline(String filename) {
+    public void installSystemPipeline(String filename) {
         evaluateAgainstTriggersDatabase("declare variable $filename external; p:insert(xdmp:document-get($filename))",
                 "filename", filename);
     }
