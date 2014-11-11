@@ -27,13 +27,6 @@ public class CpfHelper extends LoggingObject {
         }
         pipelinesXml += "</names>";
 
-        String permissionsXml = "<permissions>";
-        for (int i = 0; i < permissions.length; i += 2) {
-            permissionsXml += "<permission><role>" + permissions[i] + "</role><capability>" + permissions[i + 1]
-                    + "</capability></permission>";
-        }
-        permissionsXml += "</permissions>";
-
         String xquery = "declare variable $name external; declare variable $description external; ";
         xquery += "declare variable $scope external; declare variable $scope-uri external; declare variable $scope-depth external; ";
         xquery += "declare variable $modules-database-name external; declare variable $pipelines external; declare variable $permissions external; ";
@@ -45,7 +38,35 @@ public class CpfHelper extends LoggingObject {
 
         evaluateAgainstTriggersDatabase(xquery, "name", name, "description", description, "scope", scope, "scope-uri",
                 scopeUri, "scope-depth", scopeDepth, "modules-database-name", modulesDatabaseName, "pipelines",
-                pipelinesXml, "permissions", permissionsXml);
+                pipelinesXml, "permissions", buildPermissionsXml(permissions));
+    }
+
+    public void createDomainConfiguration(String restartUser, String modulesDatabaseName, String defaultDomainName,
+            String[] permissions) {
+        // There's not a "does the configuration exist?" function so have to resort to a try/catch
+        String xquery = "declare variable $restart-user external; declare variable $modules-database-name external; ";
+        xquery += "declare variable $default-domain-name external; declare variable $permissions external; ";
+        xquery += "let $domain-id := fn:data(dom:get($default-domain-name)/dom:domain-id)";
+        xquery += "return try { dom:configuration-get(), dom:configuration-set-default-domain($domain-id) } ";
+        xquery += "catch ($err) {";
+        xquery += "dom:configuration-create($restart-user, ";
+        xquery += "dom:evaluation-context(xdmp:database($modules-database-name), '/'), ";
+        xquery += "fn:data(dom:get($default-domain-name)/dom:domain-id), ";
+        xquery += "for $perm in $permissions return xdmp:permission($perm/role, $perm/capability))";
+
+        evaluateAgainstTriggersDatabase(xquery, "restart-user", restartUser, "modules-database-name",
+                modulesDatabaseName, "default-domain-name", defaultDomainName, "permissions",
+                buildPermissionsXml(permissions));
+    }
+
+    private String buildPermissionsXml(String[] permissions) {
+        String permissionsXml = "<permissions>";
+        for (int i = 0; i < permissions.length; i += 2) {
+            permissionsXml += "<permission><role>" + permissions[i] + "</role><capability>" + permissions[i + 1]
+                    + "</capability></permission>";
+        }
+        permissionsXml += "</permissions>";
+        return permissionsXml;
     }
 
     public void removeDomain(String domainName) {
