@@ -14,8 +14,10 @@ class CreateDomainTask extends CpfTask {
     String modulesDatabaseName
 
     // assume modules database name and root of "/"
-    String[] pipelineNames
-    String[] permissions
+    
+    // Some sensible defaults
+    String[] pipelineNames = ["Status Change Handling", "Alerting"]
+    String[] permissions = ["app-user", "read", "app-user", "execute"]
 
     @TaskAction
     void createDomain() {

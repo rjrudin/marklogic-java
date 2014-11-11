@@ -7,7 +7,9 @@ class CreateDomainConfigurationTask extends CpfTask {
     String restartUser
     String modulesDatabaseName
     String defaultDomainName
-    String[] permissions
+    
+    // Sensible default
+    String[] permissions = ["app-user", "read", "app-user", "execute"]
 
     @TaskAction
     void createDomainConfiguration() {

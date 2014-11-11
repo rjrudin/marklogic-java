@@ -52,7 +52,7 @@ public class CpfHelper extends LoggingObject {
         xquery += "dom:configuration-create($restart-user, ";
         xquery += "dom:evaluation-context(xdmp:database($modules-database-name), '/'), ";
         xquery += "fn:data(dom:get($default-domain-name)/dom:domain-id), ";
-        xquery += "for $perm in $permissions return xdmp:permission($perm/role, $perm/capability))";
+        xquery += "for $perm in $permissions return xdmp:permission($perm/role, $perm/capability))}";
 
         evaluateAgainstTriggersDatabase(xquery, "restart-user", restartUser, "modules-database-name",
                 modulesDatabaseName, "default-domain-name", defaultDomainName, "permissions",
