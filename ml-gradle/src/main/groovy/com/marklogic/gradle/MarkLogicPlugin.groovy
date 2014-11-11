@@ -8,10 +8,12 @@ import com.marklogic.gradle.task.UninstallAppTask
 import com.marklogic.gradle.task.client.LoadModulesTask
 import com.marklogic.gradle.task.client.PrepareRestApiDependenciesTask
 import com.marklogic.gradle.task.client.WatchTask
-import com.marklogic.gradle.task.client.config.CreateTransformTask;
+import com.marklogic.gradle.task.client.config.CreateTransformTask
 import com.marklogic.gradle.task.client.service.CreateResourceTask
-import com.marklogic.gradle.task.database.ClearContentDatabaseTask;
-import com.marklogic.gradle.task.database.ClearModulesTask;
+import com.marklogic.gradle.task.cpf.InstallAlertingPipelineTask
+import com.marklogic.gradle.task.cpf.InstallSchPipelineTask
+import com.marklogic.gradle.task.database.ClearContentDatabaseTask
+import com.marklogic.gradle.task.database.ClearModulesTask
 import com.marklogic.gradle.task.manage.ConfigureBitemporalTask
 import com.marklogic.gradle.task.manage.InstallPackagesTask
 import com.marklogic.gradle.task.manage.ManageConfig
@@ -47,11 +49,14 @@ class MarkLogicPlugin implements Plugin<Project> {
         ], description: "Installs the application's packages (servers and databases); does not load any modules").mustRunAfter("mlClearModules")
 
         project.task("mlPostInstallPackages", group: group, description: "Add dependsOn to this task to add tasks after mlInstallPackages finishes within mlDeploy").mustRunAfter("mlInstallPackages")
-        
-        project.task("mlLoadModules", type: LoadModulesTask, group: group, dependsOn: "mlPrepareRestApiDependencies", description: "Loads modules from directories defined by mlAppConfig or via a property on this task").mustRunAfter(["mlPostInstallPackages", "mlClearModules"])
+
+        project.task("mlLoadModules", type: LoadModulesTask, group: group, dependsOn: "mlPrepareRestApiDependencies", description: "Loads modules from directories defined by mlAppConfig or via a property on this task").mustRunAfter([
+            "mlPostInstallPackages",
+            "mlClearModules"
+        ])
 
         project.task("mlPostDeploy", group: group, description: "Add dependsOn to this to add tasks to mlDeploy").mustRunAfter("mlLoadModules")
-        
+
         project.task("mlDeploy", group: group, dependsOn: [
             "mlClearModules",
             "mlInstallPackages",
@@ -74,6 +79,11 @@ class MarkLogicPlugin implements Plugin<Project> {
         project.task("mlConfigureBitemporal", type: ConfigureBitemporalTask, group: group, description: "For MarkLogic 8 - configure support for bitemporal features")
 
         project.task("mlWatch", type: WatchTask, group: group, description: "Run a loop that checks for new/modified modules every second and loads any that it finds")
+
+        // CPF tasks
+        String cpfGroup = "MarkLogic CPF"
+        project.task("mlInstallSchPipeline", type: InstallSchPipelineTask, group: cpfGroup, description: "Installs the Status Change Handling pipeline")
+        project.task("mlInstallAlertingPipeline", type: InstallAlertingPipelineTask, group: cpfGroup, description: "Install the Alerting pipeline")
     }
 
     void initializeAppConfig(Project project) {
@@ -124,7 +134,7 @@ class MarkLogicPlugin implements Plugin<Project> {
             println "App modules XDBC port: " + port
             appConfig.setModulesXdbcPort(Integer.parseInt(port))
         }
-        
+
         project.extensions.add("mlAppConfig", appConfig)
     }
 
