@@ -15,5 +15,6 @@ class CreateDomainConfigurationTask extends CpfTask {
     void createDomainConfiguration() {
         def dbName = modulesDatabaseName ? modulesDatabaseName : getAppConfig().name + "-modules"
         newCpfHelper().createDomainConfiguration(restartUser, dbName, defaultDomainName, permissions)
+        println "Created or updated domain configuration\n"
     }
 }

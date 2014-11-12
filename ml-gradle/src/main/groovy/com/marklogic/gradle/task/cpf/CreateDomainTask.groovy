@@ -23,5 +23,6 @@ class CreateDomainTask extends CpfTask {
     void createDomain() {
         def dbName = modulesDatabaseName ? modulesDatabaseName : getAppConfig().name + "-modules"
         newCpfHelper().createDomain(domainName, domainDescription, scope, scopeUri, scopeDepth, dbName, pipelineNames, permissions)
+        println "Created or updated domain: " + domainName + "\n"
     }
 }

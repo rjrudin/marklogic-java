@@ -10,6 +10,6 @@ class DeleteAlertConfigTask extends AlertTask {
     @TaskAction
     void deleteAlertConfig() {
         newAlertHelper().deleteAlertConfig(configUri, deleteRules)
-        println "Removed alert config " + configUri + "\n"
+        println "Deleted alert config: " + configUri + "\n"
     }
 }

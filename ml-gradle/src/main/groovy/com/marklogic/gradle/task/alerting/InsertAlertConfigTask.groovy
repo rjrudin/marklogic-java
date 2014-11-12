@@ -13,5 +13,6 @@ class InsertAlertConfigTask extends AlertTask {
     @TaskAction
     void insertAlertConfig() {
         newAlertHelper().insertAlertConfig(configUri, configName, configDescription, options, cpfDomainNames)
+        println "Inserted alert config with URI: " + configUri
     }
 }

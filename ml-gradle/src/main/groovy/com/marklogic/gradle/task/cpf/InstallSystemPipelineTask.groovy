@@ -9,5 +9,6 @@ class InstallSystemPipelineTask extends CpfTask {
     @TaskAction
     void installMarkLogicPipeline() {
         newCpfHelper().installSystemPipeline(filename)
+        println "Installed system pipeline: " + filename + "\n"
     }
 }
