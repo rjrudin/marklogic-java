@@ -40,9 +40,9 @@ public class AlertHelper extends LoggingObject {
             evaluateAgainstContentDatabase(xquery, "uri", uri);
         } else {
             xquery = "declare variable $uri external; let $config := alert:config-get($uri) where $config return ";
-            xquery += "for $uri in cts:uris((), (), cts:collection-query($uri)) ";
-            xquery += "where fn:not(fn:starts-with($uri, fn:concat($uri, '/rules'))) ";
-            xquery += "return xdmp:document-delete($uri)";
+            xquery += "for $doc-uri in cts:uris((), (), cts:collection-query($uri)) ";
+            xquery += "where fn:not(fn:starts-with($doc-uri, fn:concat($uri, '/rules'))) ";
+            xquery += "return xdmp:document-delete($doc-uri)";
             evaluateAgainstContentDatabase(xquery, "uri", uri);
         }
     }
