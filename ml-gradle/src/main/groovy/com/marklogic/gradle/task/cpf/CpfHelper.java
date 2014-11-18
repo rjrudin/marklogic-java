@@ -75,6 +75,11 @@ public class CpfHelper extends LoggingObject {
                 "domain-name", domainName);
     }
 
+    public void addPipelineToDomain(String pipelineId, String domainName) {
+        String xquery = "declare variable $domain-name external; declare variable $pipeline-id external; dom:add-pipeline($domain-name, xs:unsignedLong($pipeline-id))";
+        evaluateAgainstTriggersDatabase(xquery, "domain-name", domainName, "pipeline-id", pipelineId);
+    }
+
     public String evaluateAgainstTriggersDatabase(String xquery, String... vars) {
         String v = "(";
         for (int i = 0; i < vars.length; i++) {
