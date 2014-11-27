@@ -14,9 +14,16 @@ public class MarkLogicNamespaceProvider implements NamespaceProvider {
 
     protected List<Namespace> buildListOfNamespaces() {
         List<Namespace> list = new ArrayList<>();
-        list.add(Namespace.getNamespace("prop", "http://marklogic.com/xdmp/property"));
-        list.add(Namespace.getNamespace("search", "http://marklogic.com/appservices/search"));
-        list.add(Namespace.getNamespace("sem", "http://marklogic.com/semantics"));
+        add(list, "admin", "http://marklogic.com/xdmp/admin");
+        add(list, "cts", "http://marklogic.com/cts");
+        add(list, "prop", "http://marklogic.com/xdmp/property");
+        add(list, "search", "http://marklogic.com/appservices/search");
+        add(list, "sec", "http://marklogic.com/xdmp/security");
+        add(list, "sem", "http://marklogic.com/semantics");
         return list;
+    }
+    
+    private void add(List<Namespace> list, String prefix, String uri) {
+        list.add(Namespace.getNamespace(prefix, uri));
     }
 }
