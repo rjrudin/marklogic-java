@@ -10,8 +10,8 @@ import com.marklogic.gradle.task.client.PrepareRestApiDependenciesTask
 import com.marklogic.gradle.task.client.WatchTask
 import com.marklogic.gradle.task.client.config.CreateTransformTask
 import com.marklogic.gradle.task.client.service.CreateResourceTask
-import com.marklogic.gradle.task.cpf.InstallAlertingPipelineTask
-import com.marklogic.gradle.task.cpf.InstallSchPipelineTask
+import com.marklogic.gradle.task.cpf.InsertAlertingPipelineTask
+import com.marklogic.gradle.task.cpf.InsertSchPipelineTask
 import com.marklogic.gradle.task.database.ClearContentDatabaseTask
 import com.marklogic.gradle.task.database.ClearModulesTask
 import com.marklogic.gradle.task.manage.ConfigureBitemporalTask
@@ -82,8 +82,8 @@ class MarkLogicPlugin implements Plugin<Project> {
 
         // CPF tasks
         String cpfGroup = "MarkLogic CPF"
-        project.task("mlInstallSchPipeline", type: InstallSchPipelineTask, group: cpfGroup, description: "Installs the Status Change Handling pipeline")
-        project.task("mlInstallAlertingPipeline", type: InstallAlertingPipelineTask, group: cpfGroup, description: "Install the Alerting pipeline")
+        project.task("mlInsertSchPipeline", type: InsertSchPipelineTask, group: cpfGroup, description: "Inserts the Status Change Handling pipeline")
+        project.task("mlInsertAlertingPipeline", type: InsertAlertingPipelineTask, group: cpfGroup, description: "Inserts the Alerting pipeline")
     }
 
     void initializeAppConfig(Project project) {
