@@ -27,6 +27,19 @@ apply plugin: 'ml-gradle'
 //
 
 
+/*
+ * This is an example of applying a non-version controlled Gradle file that a user may wish to create to override 
+ * properties defined in gradle.properties. Gradle does not provide an out-of-the-box mechanism for doing this, but the
+ * below technique will do the job. The local.gradle file can define an "ext" block to override properties, as well as
+ * including any other valid Gradle build scripting. 
+ */
+try {
+  apply from: "local.gradle"
+  println "Applied local.gradle file"
+} catch (Exception e) {
+  println "Couldn't find local.gradle; you can create this gitignore'd file to override properties if necessary"
+}
+
 
 /*
  * A typical Java team that uses Eclipse for development will apply both the eclipse and java plugins. See the Gradle
@@ -55,6 +68,9 @@ repositories {
 dependencies {
   compile "com.marklogic:ml-java:0.9.5"
   testCompile "com.marklogic:ml-junit:0.9.5"
+  
+  // Located at https://github.com/rjrudin/marklogic-java/tree/gh-pages/releases/com/marklogic/corb
+  runtime "com.marklogic:corb:1.0"
 }
 
 
@@ -82,3 +98,15 @@ mlMergeDatabasePackages.mergePackageFilePaths = ["src/main/xqy/packages/content-
  * MergeHttpServerPackagesTask for more information.
  */
 mlMergeHttpServerPackages.mergePackageFilePaths = ["src/main/xqy/packages/http-server.xml"]
+
+
+/*
+ * This is an example of both a custom Gradle task and an easy way of invoking Corb. This depends on "classes" to ensure 
+ * that the Corb dependency is retrievied and on "mlLoadModules" to ensure that the Corb uris/transform modules are
+ * loaded. 
+ */
+task corb(dependsOn: ['classes', 'mlLoadModules'], type: JavaExec) {
+  main = 'com.marklogic.developer.corb.Manager'
+  classpath = sourceSets.main.runtimeClasspath
+  args = [mlAppConfig.xccUrl, '""', 'transform.xqy', '4', 'uris.xqy', '/ext/corb/', 'sample-project-modules', 'false']
+}
