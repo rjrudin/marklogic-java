@@ -17,14 +17,29 @@ buildscript {
  * This is a typical set of plugins for a Java project - support for Eclipse project files, the default Java 
  * support provided by Gradle, and the ml-gradle plugin.
  */
+apply plugin: 'ml-gradle'
+
+
+
+//
+// To use ml-gradle, you only need what is above this line. Everything below this line is optional and is intended to
+// show different features provided by ml-gradle.
+//
+
+
+
+/*
+ * A typical Java team that uses Eclipse for development will apply both the eclipse and java plugins. See the Gradle
+ * docs for these plugins to see everything that they provide.
+ */ 
 apply plugin: 'eclipse'
 apply plugin: 'java'
-apply plugin: 'ml-gradle'
 
 
 /*
  * This lists the repositories for finding project dependencies (which differ from buildscript dependencies - buildscript
- * dependencies are not included in project artifacts that are built).
+ * dependencies are not included in project artifacts that are built). These repositories are needed to satisfy the
+ * dependencies expressed below. 
  */
 repositories {
   mavenCentral()
@@ -44,12 +59,26 @@ dependencies {
 
 
 /*
- * This is an example of how the database and server packages are created by merging one or more package files into a
- * default database/server package file. Multiple packages could exist in a scenario where a project depends on another
- * project that needs to contribute its own set of, e.g., range indexes or other configuration settings.
- *
- * This is also a basic example of how tasks registered by the ml-gradle plugin can be customized. We could add 
- * additional behavior to each via the doFirst and doLast blocks that exist for each task. 
+ * For tests that reference test files in the test source tree, we need to tell Gradle to copy these to src/test/resources
+ * so that they can be found when running "gradle test".
+ */
+sourceSets.test.resources.srcDir 'src/test/java'
+
+
+/*
+ * ml-gradle supports building a database package file by merging one or more partial database package files together. 
+ * ml-gradle starts with a database package file with default settings and then merges in each of the package files
+ * defined below to produce the package file that is used for creating a content database. See MergeDatabasePackagesTask
+ * for more information.
  */
 mlMergeDatabasePackages.mergePackageFilePaths = ["src/main/xqy/packages/content-database1.xml", "src/main/xqy/packages/content-database2.xml"]
+
+/* 
+ * ml-gradle supports building an HTTP server package file by merging one or more partial HTTP server package files together.
+ * ml-gradle starts with an HTTP server package file with default settings and then merges in each of the packages files
+ * defined below to produce a package file that is used for updating a REST API server. Note that this is for updating
+ * the REST API server - the REST API in ML7 does not support much customization when creating a new REST API server.
+ * So to utilize this merged HTTP server package file, you will need to invoke mlUpdateHttpServers. See
+ * MergeHttpServerPackagesTask for more information.
+ */
 mlMergeHttpServerPackages.mergePackageFilePaths = ["src/main/xqy/packages/http-server.xml"]
