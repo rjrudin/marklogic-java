@@ -3,6 +3,8 @@ package sample;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 
+import com.marklogic.client.io.Format;
+import com.marklogic.client.io.StringHandle;
 import com.marklogic.test.jdom.NamespaceProvider;
 import com.marklogic.test.spring.AbstractSpringTest;
 import com.marklogic.test.spring.BasicTestConfig;
@@ -30,7 +32,7 @@ import com.marklogic.test.spring.ModulesPath;
  */
 @TestExecutionListeners(value = { ModulesLoaderTestExecutionListener.class })
 @ModulesPath(baseDir = "src/main/xqy")
-public class AbstractSampleProjectTest extends AbstractSpringTest {
+public abstract class AbstractSampleProjectTest extends AbstractSpringTest {
 
     /**
      * A NamespaceProvider is used by Fragment instances for resolving prefixes in XPath expressions. By default, an
@@ -42,4 +44,20 @@ public class AbstractSampleProjectTest extends AbstractSpringTest {
         return new SampleNamespaceProvider();
     }
 
+    /**
+     * A common method to have in this abstract base class is one for quickly loading documents that can be used for
+     * testing. In this example, we create a simple person document in our sample namespace. We're accessing the
+     * MarkLogic DatabaseClient interface via the getClient() method, and then we use a simple method to write our XML
+     * document to the MarkLogic database.
+     * 
+     * @param uri
+     * @param name
+     * @param description
+     */
+    protected void loadPerson(String uri, String name, String description) {
+        String xml = format(
+                "<person xmlns='http://marklogic.com/sample'><name>%s</name><description>%s</description></person>",
+                name, description);
+        getClient().newXMLDocumentManager().write(uri, new StringHandle(xml).withFormat(Format.XML));
+    }
 }
