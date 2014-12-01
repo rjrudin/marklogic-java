@@ -14,8 +14,12 @@ buildscript {
 }
 
 /*
- * This is a typical set of plugins for a Java project - support for Eclipse project files, the default Java 
- * support provided by Gradle, and the ml-gradle plugin.
+ * This applies the ml-gradle plugin. This results in 3 key things being added to the Gradle project. First, a number of
+ * tasks prefixed with "ml" are registered - you can see these by running "gradle tasks". Second, an instance of AppConfig
+ * is added under the name "mlAppConfig". This defines properties for the name of the application and how to connect to 
+ * it - e.g. what port numbers it uses. Third, an instance of ManageConfig is added under the name "mlManageConfig". This
+ * defines properties for connecting to your MarkLogic Manage API as well as some package file locations used for
+ * installing your application. 
  */
 apply plugin: 'ml-gradle'
 
