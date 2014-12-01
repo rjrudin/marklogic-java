@@ -12,6 +12,9 @@
         </range-element-index>
       </range-element-indexes>
     </package-database-properties>
+    <links>
+      <triggers-database>sample-project-triggers</triggers-database>
+    </links>
   </config>
 </package-database>
 
