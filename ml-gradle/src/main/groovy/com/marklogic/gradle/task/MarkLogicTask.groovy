@@ -15,6 +15,6 @@ class MarkLogicTask extends DefaultTask {
     }
     
     boolean isTestPortSet() {
-        getAppConfig().getTestRestPort() != null
+        getAppConfig().getTestRestPort() != null && getAppConfig().getTestRestPort() > 0
     }
 }
