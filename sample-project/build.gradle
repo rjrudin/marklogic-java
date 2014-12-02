@@ -71,11 +71,13 @@ repositories {
 
 /*
  * This expresses dependencies on the ml-java and ml-junit libraries. The former is typically used for application 
- * code, and the latter supports writing JUnit-based tests. 
+ * code, and the latter supports writing JUnit-based tests. A dependency exists on RestAssured to show an option for
+ * using that library in tests that must invoke MarkLogic HTTP endpoints.
  */
 dependencies {
   compile "com.marklogic:ml-java:0.9.5"
   testCompile "com.marklogic:ml-junit:0.9.5"
+  testCompile 'com.jayway.restassured:rest-assured:2.3.1'
   
   // Located at https://github.com/rjrudin/marklogic-java/tree/gh-pages/releases/com/marklogic/corb
   runtime "com.marklogic:corb:1.0"
