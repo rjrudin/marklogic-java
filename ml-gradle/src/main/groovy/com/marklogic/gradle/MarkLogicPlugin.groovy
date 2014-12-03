@@ -2,9 +2,12 @@ package com.marklogic.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.Copy
+import org.gradle.api.tasks.Delete
 
 import com.marklogic.gradle.task.DeleteModuleTimestampsFileTask
 import com.marklogic.gradle.task.UninstallAppTask
+import com.marklogic.gradle.task.client.LoadAssetsViaMlcpTask
 import com.marklogic.gradle.task.client.LoadModulesTask
 import com.marklogic.gradle.task.client.PrepareRestApiDependenciesTask
 import com.marklogic.gradle.task.client.WatchTask
@@ -80,6 +83,25 @@ class MarkLogicPlugin implements Plugin<Project> {
 
         project.task("mlWatch", type: WatchTask, group: group, description: "Run a loop that checks for new/modified modules every second and loads any that it finds")
 
+        // Tasks for loading asset modules via MLCP
+        project.task("mlDeleteConsolidatedAssets", type: Delete, group: group) {
+            description = "Delete the directory of consolidated asset modules"
+            delete "build/ml-gradle/consolidatedAssets"
+        }
+        
+        project.task("mlConsolidateAssets", type: Copy, group: group, dependsOn: ["mlDeleteConsolidatedAssets", "mlPrepareRestApiDependencies"]) {
+            description = "Copy asset modules from each of the module paths in mlAppConfig to a temporarily build directory"
+            doFirst {
+                // Need to update this based on additions made by mlPrepareRestApiDependencies
+                from(project.property("mlAppConfig").getModulePaths())
+            }
+            from(project.property("mlAppConfig").getModulePaths())
+            into("build/ml-gradle/consolidatedAssets")
+            include("ext/**")
+        }
+        
+        project.task("mlLoadAssetsViaMlcp", type: LoadAssetsViaMlcpTask, group: group, dependsOn: "mlConsolidateAssets", description: "Loads consolidated assets via MLCP, which is much faster than loading each asset module via the REST API")
+        
         // CPF tasks
         String cpfGroup = "MarkLogic CPF"
         project.task("mlInsertSchPipeline", type: InsertSchPipelineTask, group: cpfGroup, description: "Inserts the Status Change Handling pipeline")
