@@ -1,12 +1,13 @@
 subprojects {
   apply plugin: 'eclipse'
+  apply plugin: 'idea'
+  apply plugin: 'maven-publish'
+
   group = 'com.marklogic'
   repositories {
     mavenCentral()
     maven {url "http://developer.marklogic.com/maven2/"}
   }
-
-  apply plugin: 'maven-publish'
 
   ext {
     def timestamp = new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new Date())

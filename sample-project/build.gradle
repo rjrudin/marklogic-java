@@ -50,11 +50,12 @@ ext {
 }
 
 /*
- * A typical Java team that uses Eclipse for development will apply both the eclipse and java plugins. See the Gradle
- * docs for these plugins to see everything that they provide.
+ * For generating IDE project files you might consider leveraging the Eclipse or IntelliJ IDEA plugin.
+ * See the Gradle docs for these plugins to see everything that they provide.
  */ 
-apply plugin: 'eclipse'
 apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
 
 
 /*
