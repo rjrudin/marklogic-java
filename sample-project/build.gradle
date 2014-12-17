@@ -9,7 +9,7 @@ buildscript {
   }
   
   dependencies {
-    classpath "com.marklogic:ml-gradle:0.9.5"
+    classpath "com.marklogic:ml-gradle:0.9.6"
   }
 }
 
@@ -112,7 +112,7 @@ mlMergeHttpServerPackages.mergePackageFilePaths = ["src/main/xqy/packages/http-s
 
 /*
  * This is an example of both a custom Gradle task and an easy way of invoking Corb. This depends on "classes" to ensure 
- * that the Corb dependency is retrievied and on "mlLoadModules" to ensure that the Corb uris/transform modules are
+ * that the Corb dependency is retrieved and on "mlLoadModules" to ensure that the Corb uris/transform modules are
  * loaded. 
  */
 task corb(dependsOn: ['classes', 'mlLoadModules'], type: JavaExec, group: taskGroup) {
@@ -222,4 +222,57 @@ mlPostDeploy.dependsOn mlUpdateHttpServers, insertSamplePipeline
  */
 mlClearModules.excludes = ["/ext/rest-api/my-custom-rewriter.xqy"]
 
+
+/*
+ * If your application has hundreds of assets (modules under /ext), you most likely want to use Content Pump to load 
+ * these modules rather than loading them one at a time via the REST API. To do so, make mlLoadModules depend on
+ * mlLoadAssetsViaMlcp. mlLoadModules will still use the REST API for loading non-asset modules (options, transforms, etc).
+ *
+ * In order to use Content Pump, we need to tell Gradle where to find the Content Pump jar and its dependencies. To do
+ * so, we create a new Gradle configuration named "mlcp" so we keep these dependencies separate from our application.
+ * We then need to include an additional repository - the Cloudera repository - to resolve all the dependencies. 
+ * Finally, the Content Pump POM has an issue (bug 31294) that requires us to tell Gradle not to pull in the dependencies
+ * of commons-modeler, else the wrong version of xml-apis.jar is brought in, breaking Content Pump. Alas. So we add a 
+ * dependency on Content Pump, but it's a little more complicated because of the commons-modeler exclusion.
+ */
+configurations {
+  mlcp
+}
+dependencies {
+  mlcp("com.marklogic:mlcp-Hadoop2:1.2-3") {
+    exclude module:"commons-modeler"
+  }
+  mlcp("commons-modeler:commons-modeler:2.0") {
+    transitive = false
+  }
+}
+repositories {
+  maven {url "http://repository.cloudera.com/artifactory/cloudera-repos/" }
+}
+
+mlLoadAssetsViaMlcp.classpath = configurations.mlcp
+mlLoadModules.dependsOn mlLoadAssetsViaMlcp
+
+/*
+ * By default, extensions of MlcpTask will use mlAppConfig.xdbcPort, but that puts modules into the content database. We
+ * instead want to use modulesXdbcPort, which will put modules in the modules database.
+ */
+mlLoadAssetsViaMlcp.port = mlAppConfig.modulesXdbcPort
+
  
+/*
+ * The mlLoadAssetsViaMlcp task above is actually an extension of MlcpTask, which is a convenience task for running
+ * MarkLogic Content Pump (MLCP) via the Gradle JavaExec task (which MlcpTask extends). The task below shows an example
+ * of running a Content Pump import. It depends on the configurations/dependencies/repositories blocks above for pulling
+ * in Content Pump and its dependencies.
+ *
+ * By default, MlcpTask will set host/port/username/password basedg import on the configuration in mlAppConfig, which is populated
+ * by the values in gradle.properties. MlcpTask also has a number of parameters for performing imports, though you can
+ * always use the "args" array as shown below for passing in additional parameters.
+ */
+task importViaContentPump(type: com.marklogic.gradle.task.MlcpTask) {
+  classpath = configurations.mlcp
+  command = "IMPORT"
+  input_file_path = "path/to/some-file.csv"
+  args = ["-document_type", "text"]
+}
