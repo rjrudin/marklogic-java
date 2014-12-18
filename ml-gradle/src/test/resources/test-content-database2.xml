@@ -30,6 +30,63 @@
           <invalid-values>ignore</invalid-values>
         </range-field-index>
       </range-field-indexes>
+      <geospatial-element-indexes>
+        <geospatial-element-index>
+          <namespace-uri>samplens</namespace-uri>
+          <localname>theelement</localname>
+          <coordinate-system>wgs84</coordinate-system>
+          <point-format>point</point-format>
+          <range-value-positions>false</range-value-positions>
+          <invalid-values>reject</invalid-values>
+        </geospatial-element-index>
+      </geospatial-element-indexes>
+      <geospatial-element-child-indexes>
+        <geospatial-element-child-index>
+          <parent-namespace-uri>parentns</parent-namespace-uri>
+          <parent-localname>parentname</parent-localname>
+          <namespace-uri>childns</namespace-uri>
+          <localname>childname</localname>
+          <coordinate-system>wgs84</coordinate-system>
+          <point-format>point</point-format>
+          <range-value-positions>false</range-value-positions>
+          <invalid-values>reject</invalid-values>
+        </geospatial-element-child-index>
+      </geospatial-element-child-indexes>
+      <geospatial-element-pair-indexes>
+        <geospatial-element-pair-index>
+          <parent-namespace-uri>parentns</parent-namespace-uri>
+          <parent-localname>parentname</parent-localname>
+          <latitude-namespace-uri>latns</latitude-namespace-uri>
+          <latitude-localname>latname</latitude-localname>
+          <longitude-namespace-uri>lonns</longitude-namespace-uri>
+          <longitude-localname>lonname</longitude-localname>
+          <coordinate-system>wgs84</coordinate-system>
+          <range-value-positions>false</range-value-positions>
+          <invalid-values>reject</invalid-values>
+        </geospatial-element-pair-index>
+      </geospatial-element-pair-indexes>
+      <geospatial-element-attribute-pair-indexes>
+        <geospatial-element-attribute-pair-index>
+          <parent-namespace-uri>parentns</parent-namespace-uri>
+          <parent-localname>parentname</parent-localname>
+          <latitude-namespace-uri>latns</latitude-namespace-uri>
+          <latitude-localname>latname</latitude-localname>
+          <longitude-namespace-uri>lonns</longitude-namespace-uri>
+          <longitude-localname>lonname</longitude-localname>
+          <coordinate-system>wgs84</coordinate-system>
+          <range-value-positions>false</range-value-positions>
+          <invalid-values>reject</invalid-values>
+        </geospatial-element-attribute-pair-index>
+      </geospatial-element-attribute-pair-indexes>
+      <geospatial-path-indexes>
+        <geospatial-path-index>
+          <path-expression>/parent/child</path-expression>
+          <coordinate-system>wgs84</coordinate-system>
+          <point-format>point</point-format>
+          <range-value-positions>false</range-value-positions>
+          <invalid-values>reject</invalid-values>
+        </geospatial-path-index>
+      </geospatial-path-indexes>
       <element-word-query-throughs>
         <element-word-query-through>
           <namespace-uri>urn:second:namespace</namespace-uri>

@@ -69,7 +69,11 @@
       <range-field-indexes />
       <path-namespaces />
       <range-path-indexes />
-      <geospatial-element-indexes/>
+      <geospatial-element-indexes />
+      <geospatial-element-child-indexes />
+      <geospatial-element-pair-indexes />
+      <geospatial-element-attribute-pair-indexes />
+      <geospatial-path-indexes />
       <element-word-lexicons />
       <element-attribute-word-lexicons />
       <maintain-last-modified>false</maintain-last-modified>
