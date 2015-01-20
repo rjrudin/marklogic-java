@@ -28,12 +28,18 @@ public abstract class AbstractSpringTest extends BaseTestHelper implements Appli
     public void deleteDocumentsBeforeTestRuns() {
         XccTemplate xccTemplate = getXccTemplate();
         if (xccTemplate != null) {
-            xccTemplate
-                    .executeXquery("for $uri in cts:uri-match('*') where fn:doc-available($uri) return xdmp:document-delete($uri)");
+            xccTemplate.executeXquery(getClearDatabaseXquery());
         } else {
             logger.warn("Not deleting documents before test runs, could not find single instance of "
                     + XccTemplate.class.getName() + " in Spring");
         }
+    }
+
+    /**
+     * Protected so a subclass can modify this to, e.g., not delete every document.
+     */
+    protected String getClearDatabaseXquery() {
+        return "xdmp:forest-clear(xdmp:database-forests(xdmp:database()))";
     }
 
     @Override
