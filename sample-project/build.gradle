@@ -9,7 +9,7 @@ buildscript {
   }
   
   dependencies {
-    classpath "com.marklogic:ml-gradle:0.9.6"
+    classpath "com.marklogic:ml-gradle:0.9.7"
   }
 }
 
@@ -46,6 +46,7 @@ try {
 
 ext {
   // This property is used for grouping all the custom tasks in this file so that they appear together when "gradle tasks" is run.
+  // This is optional, but it's usually a good practice to group your tasks together.  
   taskGroup = "Sample project tasks"
 }
 
