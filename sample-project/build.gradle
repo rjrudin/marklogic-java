@@ -70,6 +70,13 @@ repositories {
   maven {url "http://rjrudin.github.io/marklogic-java/releases"}
 }
 
+/*
+ * This custom Gradle configuration allows us to specify the classpath for running Corb jobs. This is only needed if 
+ * you want to run Corb jobs via Gradle tasks. More info on Corb can be found at - http://developer.marklogic.com/code/corb.
+ */
+configurations {
+  corb
+}
 
 /*
  * This expresses dependencies on the ml-java and ml-junit libraries. The former is typically used for application 
@@ -77,12 +84,13 @@ repositories {
  * using that library in tests that must invoke MarkLogic HTTP endpoints.
  */
 dependencies {
-  compile "com.marklogic:ml-java:0.9.5"
-  testCompile "com.marklogic:ml-junit:0.9.5"
-  testCompile 'com.jayway.restassured:rest-assured:2.3.1'
+  compile "com.marklogic:ml-java:0.9.7"
+  testCompile "com.marklogic:ml-junit:0.9.7"
+  testCompile "com.jayway.restassured:rest-assured:2.3.1"
   
   // Located at https://github.com/rjrudin/marklogic-java/tree/gh-pages/releases/com/marklogic/corb
-  runtime "com.marklogic:corb:1.0"
+  corb "com.marklogic:corb:1.0"
+  corb "com.marklogic:marklogic-xcc:7.0.4"
 }
 
 
@@ -113,13 +121,14 @@ mlMergeHttpServerPackages.mergePackageFilePaths = ["src/main/xqy/packages/http-s
 
 
 /*
- * This is an example of both a custom Gradle task and an easy way of invoking Corb. This depends on "classes" to ensure 
- * that the Corb dependency is retrieved and on "mlLoadModules" to ensure that the Corb uris/transform modules are
- * loaded. 
+ * This is an example of both a custom Gradle task and an easy way of invoking Corb. This depends on "mlLoadModules" to 
+ * ensure that the Corb uris/transform modules are loaded. It also uses as a classpath the custom configuration named 
+ * "corb" that we defined earlier. Note that sample uris.xqy and transform.xqy modules just print a log statement for
+ * each document in your content database, so unless there are documents, you won't see any result from this. 
  */
-task corb(dependsOn: ['classes', 'mlLoadModules'], type: JavaExec, group: taskGroup) {
+task runCorb(dependsOn: ['mlLoadModules'], type: JavaExec, group: taskGroup) {
   main = 'com.marklogic.developer.corb.Manager'
-  classpath = sourceSets.main.runtimeClasspath
+  classpath = configurations.corb
   args = [mlAppConfig.xccUrl, '""', 'transform.xqy', '4', 'uris.xqy', '/ext/corb/', 'sample-project-modules', 'false']
 }
 
