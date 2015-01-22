@@ -31,6 +31,7 @@ class MlcpTask extends JavaExec {
     String output_permissions
     String transform_module
     String transform_namespace
+		String transform_param
     String thread_count
     
     @TaskAction
@@ -109,6 +110,10 @@ class MlcpTask extends JavaExec {
             newArgs.add("-transform_namespace")
             newArgs.add(transform_namespace)
         }
+				if (transform_param) {
+					newArgs.add("-transform_param")
+					newArgs.add(transform_param)
+			}
         if (thread_count) {
             newArgs.add("-thread_count")
             newArgs.add(thread_count)
