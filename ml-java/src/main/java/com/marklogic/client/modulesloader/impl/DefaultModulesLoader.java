@@ -39,6 +39,13 @@ public class DefaultModulesLoader extends LoggingObject implements com.marklogic
     private ModulesFinder modulesFinder;
     private ModulesManager modulesManager;
     private ExtensionLibraryDescriptorBuilder extensionLibraryDescriptorBuilder;
+    
+    /**
+     * When set to true, exceptions thrown while loading transforms and resources will be caught and logged, and the
+     * module will be updated as having been loaded. This is useful when running a program like ModulesWatcher, as it
+     * prevents the program from crashing and also from trying to load the module over and over.
+     */
+    private boolean catchExceptions = false;
 
     public DefaultModulesLoader() {
         this.extensionMetadataProvider = new XmlExtensionMetadataProvider();
@@ -51,53 +58,90 @@ public class DefaultModulesLoader extends LoggingObject implements com.marklogic
 
         modulesManager.initialize();
 
-        Modules files = modulesFinder.findModules(baseDir);
+        Modules modules = modulesFinder.findModules(baseDir);
 
         Set<File> loadedModules = new HashSet<>();
 
-        for (Asset asset : files.getAssets()) {
+        loadAssets(modules, loadedModules);
+        loadQueryOptions(modules, loadedModules);
+        loadTransforms(modules, loadedModules);
+        loadResources(modules, loadedModules);
+        loadNamespaces(modules, loadedModules);
+
+        return loadedModules;
+    }
+
+    protected void loadAssets(Modules modules, Set<File> loadedModules) {
+        for (Asset asset : modules.getAssets()) {
             File f = installAsset(asset);
             if (f != null) {
                 loadedModules.add(f);
             }
         }
+    }
 
-        for (File f : files.getOptions()) {
+    protected void loadQueryOptions(Modules modules, Set<File> loadedModules) {
+        for (File f : modules.getOptions()) {
             f = installQueryOptions(f);
             if (f != null) {
                 loadedModules.add(f);
             }
         }
+    }
 
-        for (File f : files.getTransforms()) {
+    protected void loadTransforms(Modules modules, Set<File> loadedModules) {
+        for (File f : modules.getTransforms()) {
             ExtensionMetadataAndParams emap = extensionMetadataProvider.provideExtensionMetadataAndParams(f);
-            f = installTransform(f, emap.metadata);
+            try {
+                f = installTransform(f, emap.metadata);
+                if (f != null) {
+                    loadedModules.add(f);
+                }
+            } catch (Exception e) {
+                if (catchExceptions) {
+                    logger.warn(
+                            "Unable to load module from file: " + f.getAbsolutePath() + "; cause: " + e.getMessage(), e);
+                    loadedModules.add(f);
+                } else {
+                    throw e;
+                }
+            }
+        }
+    }
+
+    protected void loadResources(Modules modules, Set<File> loadedModules) {
+        for (File f : modules.getServices()) {
+            ExtensionMetadataAndParams emap = extensionMetadataProvider.provideExtensionMetadataAndParams(f);
+            try {
+                f = installResource(f, emap.metadata, emap.methods.toArray(new MethodParameters[] {}));
+            } catch (Exception e) {
+                if (catchExceptions) {
+                    logger.warn(
+                            "Unable to load module from file: " + f.getAbsolutePath() + "; cause: " + e.getMessage(), e);
+                    loadedModules.add(f);
+                } else {
+                    throw e;
+                }
+            }
             if (f != null) {
                 loadedModules.add(f);
             }
         }
+    }
 
-        for (File f : files.getServices()) {
-            ExtensionMetadataAndParams emap = extensionMetadataProvider.provideExtensionMetadataAndParams(f);
-            f = installResource(f, emap.metadata, emap.methods.toArray(new MethodParameters[] {}));
-            if (f != null) {
-                loadedModules.add(f);
-            }
-        }
-
-        for (File f : files.getNamespaces()) {
+    protected void loadNamespaces(Modules modules, Set<File> loadedModules) {
+        for (File f : modules.getNamespaces()) {
             f = installNamespace(f);
             if (f != null) {
                 loadedModules.add(f);
             }
         }
-        return loadedModules;
     }
 
     /**
-     * This can be used by projects that use MLCP to load many modules in the assets directory. In
-     * such a case, it's usually desirable to pretend to load all of the assets so that the
-     * timestamp at which each asset was last loaded is updated to the current time.
+     * This can be used by projects that use MLCP to load many modules in the assets directory. In such a case, it's
+     * usually desirable to pretend to load all of the assets so that the timestamp at which each asset was last loaded
+     * is updated to the current time.
      * 
      * @param baseDir
      */
@@ -144,9 +188,8 @@ public class DefaultModulesLoader extends LoggingObject implements com.marklogic
     }
 
     /**
-     * TODO Need something pluggable here - probably should delegate this to a separate object so
-     * that a client could easily provide a different implementation in case the assumptions below
-     * aren't correct.
+     * TODO Need something pluggable here - probably should delegate this to a separate object so that a client could
+     * easily provide a different implementation in case the assumptions below aren't correct.
      * 
      * @param file
      * @return
@@ -173,13 +216,9 @@ public class DefaultModulesLoader extends LoggingObject implements com.marklogic
             metadata.setTitle(resourceName + " resource extension");
         }
         logger.info(String.format("Loading %s resource extension from file %s", resourceName, file));
-        try {
-            extMgr.writeServices(resourceName, new FileHandle(file), metadata, methodParams);
-            modulesManager.saveLastInstalledTimestamp(file, new Date());
-            return file;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        extMgr.writeServices(resourceName, new FileHandle(file), metadata, methodParams);
+        modulesManager.saveLastInstalledTimestamp(file, new Date());
+        return file;
     }
 
     public File installTransform(File file, ExtensionMetadata metadata) {
@@ -189,17 +228,13 @@ public class DefaultModulesLoader extends LoggingObject implements com.marklogic
         TransformExtensionsManager mgr = client.newServerConfigManager().newTransformExtensionsManager();
         String transformName = getExtensionNameFromFile(file);
         logger.info(String.format("Loading %s transform from file %s", transformName, file));
-        try {
-            if (FilenameUtil.isXslFile(file.getName())) {
-                mgr.writeXSLTransform(transformName, new FileHandle(file), metadata);
-            } else {
-                mgr.writeXQueryTransform(transformName, new FileHandle(file), metadata);
-            }
-            modulesManager.saveLastInstalledTimestamp(file, new Date());
-            return file;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (FilenameUtil.isXslFile(file.getName())) {
+            mgr.writeXSLTransform(transformName, new FileHandle(file), metadata);
+        } else {
+            mgr.writeXQueryTransform(transformName, new FileHandle(file), metadata);
         }
+        modulesManager.saveLastInstalledTimestamp(file, new Date());
+        return file;
     }
 
     public File installQueryOptions(File f) {
@@ -265,4 +300,13 @@ public class DefaultModulesLoader extends LoggingObject implements com.marklogic
     public void setExtensionLibraryDescriptorBuilder(ExtensionLibraryDescriptorBuilder extensionLibraryDescriptorBuilder) {
         this.extensionLibraryDescriptorBuilder = extensionLibraryDescriptorBuilder;
     }
+
+    public boolean isCatchExceptions() {
+        return catchExceptions;
+    }
+
+    public void setCatchExceptions(boolean catchExceptions) {
+        this.catchExceptions = catchExceptions;
+    }
+
 }

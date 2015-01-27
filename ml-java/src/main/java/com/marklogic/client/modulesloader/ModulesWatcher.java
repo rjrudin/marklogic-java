@@ -24,8 +24,7 @@ public class ModulesWatcher {
      * <li>Third arg is the port to connect to on the MarkLogic host</li>
      * <li>Fourth arg is the MarkLogic username to connect with</li>
      * <li>Fifth arg is the password for the MarkLogic username</li>
-     * <li>The optional sixth arg is the fully-qualified class name of a ModulesLoader
-     * implementation</li>
+     * <li>The optional sixth arg is the fully-qualified class name of a ModulesLoader implementation</li>
      * </ol>
      * 
      * @param args
@@ -44,7 +43,9 @@ public class ModulesWatcher {
             loader = (DefaultModulesLoader) Class.forName(args[5]).newInstance();
         } else {
             logger.info("Using " + DefaultModulesLoader.class.getName() + " to load modules");
-            loader = new DefaultModulesLoader();
+            DefaultModulesLoader impl = new DefaultModulesLoader();
+            impl.setCatchExceptions(true);
+            loader = impl;
         }
 
         logger.info(String.format("Connecting to http://%s:%d as user %s", host, port, username));
