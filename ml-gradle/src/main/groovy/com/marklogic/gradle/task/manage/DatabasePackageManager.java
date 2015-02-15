@@ -3,6 +3,8 @@ package com.marklogic.gradle.task.manage;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.marklogic.gradle.RestHelper;
+
 public class DatabasePackageManager {
 
     private String appName;
