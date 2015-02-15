@@ -9,7 +9,7 @@ buildscript {
   }
   
   dependencies {
-    classpath "com.marklogic:ml-gradle:0.9.7"
+    classpath "com.marklogic:ml-gradle:0.9.9"
   }
 }
 
@@ -84,8 +84,8 @@ configurations {
  * using that library in tests that must invoke MarkLogic HTTP endpoints.
  */
 dependencies {
-  compile "com.marklogic:ml-java:0.9.7"
-  testCompile "com.marklogic:ml-junit:0.9.7"
+  compile 'com.marklogic:ml-javaclient-util:0.9.9'
+  testCompile "com.marklogic:ml-junit:0.9.9"
   testCompile "com.jayway.restassured:rest-assured:2.3.1"
   
   // Located at https://github.com/rjrudin/marklogic-java/tree/gh-pages/releases/com/marklogic/corb

@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.json.JsonPath;
-import com.marklogic.client.helper.DatabaseClientConfig;
-import com.marklogic.test.jdom.Fragment;
+import com.marklogic.clientutil.DatabaseClientConfig;
+import com.marklogic.junit.Fragment;
 
 /**
  * This test shows an example of using RestAssured instead of the MarkLogic Java API to invoke MarkLogic REST API
