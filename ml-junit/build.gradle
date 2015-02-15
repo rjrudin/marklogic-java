@@ -1,6 +1,0 @@
-dependencies {
-  compile 'jaxen:jaxen:1.1.6'
-  compile 'junit:junit:4+'
-  compile 'org.springframework:spring-test:4.0.6.RELEASE'
-  compile 'xmlunit:xmlunit:1.5'
-}
