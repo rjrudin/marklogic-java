@@ -8,7 +8,7 @@
     <platform>REPLACEDONINSTALL</platform>
   </metadata>
   <config>
-    <name>sample-project-triggers</name>
+    <name>%%DATABASE_NAME%%</name>
     <package-database-properties>
       <enabled>true</enabled>
       <retired-forest-count>0</retired-forest-count>
@@ -111,7 +111,7 @@
     </package-database-properties>
     <links>
       <forests-list>
-        <forest-name>sample-project-triggers-1</forest-name>
+        <forest-name>%%DATABASE_NAME%%-1</forest-name>
       </forests-list>
       <security-database>Security</security-database>
       <schema-database>Schemas</schema-database>

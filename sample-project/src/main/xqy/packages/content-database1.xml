@@ -13,7 +13,7 @@
       </range-element-indexes>
     </package-database-properties>
     <links>
-      <triggers-database>sample-project-triggers</triggers-database>
+      <triggers-database>%%TRIGGERS_DATABASE_NAME%%</triggers-database>
     </links>
   </config>
 </package-database>

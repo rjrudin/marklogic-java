@@ -6,10 +6,10 @@ buildscript {
         mavenCentral()
         maven {url "http://developer.marklogic.com/maven2/"}
         maven {url "http://rjrudin.github.io/marklogic-java/releases"}
-        maven {url "file:../../gh-pages-marklogic-java/releases"}
+        //maven {url "file:../../gh-pages-marklogic-java/releases"}
     }
 
-    dependencies { classpath "com.marklogic:ml-gradle:1.1-beta" }
+    dependencies { classpath "com.marklogic:ml-gradle:1.1-alpha" }
 }
 
 /*
