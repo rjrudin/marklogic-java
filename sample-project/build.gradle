@@ -2,15 +2,14 @@
  * The buildscript block lets us tell Gradle about our dependency on ml-gradle and where to find its dependencies.
  */
 buildscript {
-  repositories {
-    mavenCentral()
-    maven {url "http://developer.marklogic.com/maven2/"}
-    maven {url "http://rjrudin.github.io/marklogic-java/releases"}
-  }
-  
-  dependencies {
-    classpath "com.marklogic:ml-gradle:1.0"
-  }
+    repositories {
+        mavenCentral()
+        maven {url "http://developer.marklogic.com/maven2/"}
+        maven {url "http://rjrudin.github.io/marklogic-java/releases"}
+        maven {url "file:../../gh-pages-marklogic-java/releases"}
+    }
+
+    dependencies { classpath "com.marklogic:ml-gradle:1.1-beta" }
 }
 
 /*
@@ -38,16 +37,10 @@ apply plugin: 'ml-gradle'
  * including any other valid Gradle build scripting. 
  */
 try {
-  apply from: "local.gradle"
-  println "Applied local.gradle file"
+    apply from: "local.gradle"
+    println "Applied local.gradle file"
 } catch (Exception e) {
-  println "Couldn't find local.gradle; you can create this gitignore'd file to override properties if necessary"
-}
-
-ext {
-  // This property is used for grouping all the custom tasks in this file so that they appear together when "gradle tasks" is run.
-  // This is optional, but it's usually a good practice to group your tasks together.  
-  taskGroup = "Sample project tasks"
+    println "Couldn't find local.gradle; you can create this gitignore'd file to override properties if necessary"
 }
 
 /*
@@ -65,18 +58,16 @@ apply plugin: 'idea'
  * dependencies expressed below. 
  */
 repositories {
-  mavenCentral()
-  maven {url "http://developer.marklogic.com/maven2/"}
-  maven {url "http://rjrudin.github.io/marklogic-java/releases"}
+    mavenCentral()
+    maven {url "http://developer.marklogic.com/maven2/"}
+    maven {url "http://rjrudin.github.io/marklogic-java/releases"}
 }
 
 /*
  * This custom Gradle configuration allows us to specify the classpath for running Corb jobs. This is only needed if 
  * you want to run Corb jobs via Gradle tasks. More info on Corb can be found at - http://developer.marklogic.com/code/corb.
  */
-configurations {
-  corb
-}
+configurations { corb }
 
 /*
  * This expresses dependencies on the ml-java and ml-junit libraries. The former is typically used for application 
@@ -84,40 +75,32 @@ configurations {
  * using that library in tests that must invoke MarkLogic HTTP endpoints.
  */
 dependencies {
-  compile "com.marklogic:ml-javaclient-util:1.0"
-  testCompile "com.marklogic:ml-junit:1.0"
-  testCompile "com.jayway.restassured:rest-assured:2.3.1"
-  
-  // Located at https://github.com/rjrudin/marklogic-java/tree/gh-pages/releases/com/marklogic/corb
-  corb "com.marklogic:corb:1.0"
-  corb "com.marklogic:marklogic-xcc:7.0.4"
+    compile "com.marklogic:ml-javaclient-util:1.0"
+    testCompile "com.marklogic:ml-junit:1.0"
+    testCompile "com.jayway.restassured:rest-assured:2.3.1"
+
+    // Located at https://github.com/rjrudin/marklogic-java/tree/gh-pages/releases/com/marklogic/corb
+    corb "com.marklogic:corb:1.0"
+    corb "com.marklogic:marklogic-xcc:7.0.4"
 }
 
 
-/*
- * For tests that reference test files in the test source tree, we need to tell Gradle to copy these to src/test/resources
- * so that they can be found when running "gradle test".
- */
-sourceSets.test.resources.srcDir 'src/test/java'
+ext {
+    // This property is used for grouping all the custom tasks in this file so that they appear together when "gradle tasks" is run.
+    // This is optional, but it's usually a good practice to group your tasks together.
+    taskGroup = "Sample project tasks"
+    
+    /*
+     * ml-gradle supports building database and HTTP server packages by merging one or more partial package files together.
+     * ml-gradle starts with a "plain vanilla" package with default settings and then merges in each of the package files
+     * that you specify.
+     */
+    mlAppConfig {
+        databasePackageFilePaths = ["src/main/xqy/packages/content-database1.xml", "src/main/xqy/packages/content-database2.xml"]
+        httpServerPackageFilePaths = ["src/main/xqy/packages/http-server.xml"]
+    }
 
-
-/*
- * ml-gradle supports building a database package file by merging one or more partial database package files together. 
- * ml-gradle starts with a database package file with default settings and then merges in each of the package files
- * defined below to produce the package file that is used for creating a content database. See MergeDatabasePackagesTask
- * for more information.
- */
-mlMergeDatabasePackages.mergePackageFilePaths = ["src/main/xqy/packages/content-database1.xml", "src/main/xqy/packages/content-database2.xml"]
-
-/* 
- * ml-gradle supports building an HTTP server package file by merging one or more partial HTTP server package files together.
- * ml-gradle starts with an HTTP server package file with default settings and then merges in each of the packages files
- * defined below to produce a package file that is used for updating a REST API server. Note that this is for updating
- * the REST API server - the REST API in ML7 does not support much customization when creating a new REST API server.
- * So to utilize this merged HTTP server package file, you will need to invoke mlUpdateHttpServers. See
- * MergeHttpServerPackagesTask for more information.
- */
-mlMergeHttpServerPackages.mergePackageFilePaths = ["src/main/xqy/packages/http-server.xml"]
+}
 
 
 /*
@@ -127,9 +110,9 @@ mlMergeHttpServerPackages.mergePackageFilePaths = ["src/main/xqy/packages/http-s
  * each document in your content database, so unless there are documents, you won't see any result from this. 
  */
 task runCorb(dependsOn: ['mlLoadModules'], type: JavaExec, group: taskGroup) {
-  main = 'com.marklogic.developer.corb.Manager'
-  classpath = configurations.corb
-  args = [mlAppConfig.xccUrl, '""', 'transform.xqy', '4', 'uris.xqy', '/ext/corb/', 'sample-project-modules', 'false']
+    main = 'com.marklogic.developer.corb.Manager'
+    classpath = configurations.corb
+    args = [mlAppConfig.xccUrl, '""', 'transform.xqy', '4', 'uris.xqy', '/ext/corb/', 'sample-project-modules', 'false']
 }
 
 
@@ -138,22 +121,20 @@ task runCorb(dependsOn: ['mlLoadModules'], type: JavaExec, group: taskGroup) {
  * yet support a way of creating users via an XML file, though that would be straightforward to add.
  */
 task createUser(type: com.marklogic.gradle.task.security.CreateUserTask, group: taskGroup) {
-  username = "sample-project-user"
-  userDescription = "Sample project user"
-  password = "password"
-  roleNames = ["alert-user", "rest-admin"]
-  collections = ["default-collection"]
-  permissionRoles = ["rest-reader", "rest-writer"]
-  permissionCapabilities = ["read", "update"]
+    username = "sample-project-user"
+    userDescription = "Sample project user"
+    password = "password"
+    roleNames = ["alert-user", "rest-admin"]
+    collections = ["default-collection"]
+    permissionRoles = ["rest-reader", "rest-writer"]
+    permissionCapabilities = ["read", "update"]
 }
 
 
 /*
  * Users can be easily removed.
  */
-task removeUser(type: com.marklogic.gradle.task.security.RemoveUsersTask, group: taskGroup) {
-  usernames = ["sample-project-user"]
-}
+task removeUser(type: com.marklogic.gradle.task.security.RemoveUsersTask, group: taskGroup) { usernames = ["sample-project-user"] }
 
 
 /*
@@ -161,23 +142,21 @@ task removeUser(type: com.marklogic.gradle.task.security.RemoveUsersTask, group:
  * file, though that too would be straightforward to add.
  */
 task createRole(type: com.marklogic.gradle.task.security.CreateRoleTask, group: taskGroup) {
-  roleName = "sample-project-role"
-  roleDescription = "Sample project role role"
-  roleNames = ["rest-reader"]
-  permissionRoles = ["rest-reader", "rest-writer"]
-  permissionCapabilities = ["read", "update"]
-  collections = ["default-collection"]
-  executePrivilegeActions = ["xdmp:login", "xdmp:eval"]
-  uriPrivilegeActions = ["domain-uri", "pipeline-uri"]
+    roleName = "sample-project-role"
+    roleDescription = "Sample project role role"
+    roleNames = ["rest-reader"]
+    permissionRoles = ["rest-reader", "rest-writer"]
+    permissionCapabilities = ["read", "update"]
+    collections = ["default-collection"]
+    executePrivilegeActions = ["xdmp:login", "xdmp:eval"]
+    uriPrivilegeActions = ["domain-uri", "pipeline-uri"]
 }
 
 
 /*
  * Roles can be easily removed too.
  */
-task removeRole(type: com.marklogic.gradle.task.security.RemoveRolesTask, group: taskGroup) {
-  roles = ["sample-project-role"]
-}
+task removeRole(type: com.marklogic.gradle.task.security.RemoveRolesTask, group: taskGroup) { roles = ["sample-project-role"] }
 
 
 /*
@@ -191,11 +170,11 @@ task removeRole(type: com.marklogic.gradle.task.security.RemoveRolesTask, group:
  * currently have to define a complete package file. 
  */
 task createSampleDomain(type: com.marklogic.gradle.task.cpf.CreateDomainTask, group: taskGroup, dependsOn: ["mlInsertSchPipeline"]) {
-  domainName = "sample-domain"
-  domainDescription = "Domain for sample-collection"
-  scope = "directory"
-  scopeUri = "/"
-  pipelineNames = ["Status Change Handling"]
+    domainName = "sample-domain"
+    domainDescription = "Domain for sample-collection"
+    scope = "directory"
+    scopeUri = "/"
+    pipelineNames = ["Status Change Handling"]
 }
 
 
@@ -204,8 +183,8 @@ task createSampleDomain(type: com.marklogic.gradle.task.cpf.CreateDomainTask, gr
  * is expressed via the task. 
  */
 task createDomainConfiguration(type: com.marklogic.gradle.task.cpf.CreateDomainConfigurationTask, group: taskGroup, dependsOn: ["createSampleDomain"]) {
-  restartUser = mlAppConfig.username
-  defaultDomainName = "sample-domain"
+    restartUser = mlAppConfig.username
+    defaultDomainName = "sample-domain"
 }
 
 
@@ -214,8 +193,8 @@ task createDomainConfiguration(type: com.marklogic.gradle.task.cpf.CreateDomainC
  * will be attached to each domain name.
  */
 task insertSamplePipeline(type: com.marklogic.gradle.task.cpf.InsertPipelinesTask, group: taskGroup, dependsOn: ["createDomainConfiguration"]) {
-  filePaths = ["src/main/xqy/cpf/sample-pipeline.xml"]
-  domainNames = ["sample-domain"]
+    filePaths = ["src/main/xqy/cpf/sample-pipeline.xml"]
+    domainNames = ["sample-domain"]
 }
 
 
@@ -246,20 +225,12 @@ mlClearModules.excludes = ["/ext/rest-api/my-custom-rewriter.xqy"]
  * of commons-modeler, else the wrong version of xml-apis.jar is brought in, breaking Content Pump. Alas. So we add a 
  * dependency on Content Pump, but it's a little more complicated because of the commons-modeler exclusion.
  */
-configurations {
-  mlcp
-}
+configurations { mlcp }
 dependencies {
-  mlcp("com.marklogic:mlcp-Hadoop2:1.2-3") {
-    exclude module:"commons-modeler"
-  }
-  mlcp("commons-modeler:commons-modeler:2.0") {
-    transitive = false
-  }
+    mlcp("com.marklogic:mlcp-Hadoop2:1.2-3") { exclude module:"commons-modeler" }
+    mlcp("commons-modeler:commons-modeler:2.0") { transitive = false }
 }
-repositories {
-  maven {url "http://repository.cloudera.com/artifactory/cloudera-repos/" }
-}
+repositories { maven {url "http://repository.cloudera.com/artifactory/cloudera-repos/" } }
 
 mlLoadAssetsViaMlcp.classpath = configurations.mlcp
 mlLoadModules.dependsOn mlLoadAssetsViaMlcp
@@ -270,7 +241,7 @@ mlLoadModules.dependsOn mlLoadAssetsViaMlcp
  */
 mlLoadAssetsViaMlcp.port = mlAppConfig.modulesXdbcPort
 
- 
+
 /*
  * The mlLoadAssetsViaMlcp task above is actually an extension of MlcpTask, which is a convenience task for running
  * MarkLogic Content Pump (MLCP) via the Gradle JavaExec task (which MlcpTask extends). The task below shows an example
@@ -282,8 +253,15 @@ mlLoadAssetsViaMlcp.port = mlAppConfig.modulesXdbcPort
  * always use the "args" array as shown below for passing in additional parameters.
  */
 task importViaContentPump(type: com.marklogic.gradle.task.MlcpTask) {
-  classpath = configurations.mlcp
-  command = "IMPORT"
-  input_file_path = "path/to/some-file.csv"
-  args = ["-document_type", "text"]
+    classpath = configurations.mlcp
+    command = "IMPORT"
+    input_file_path = "path/to/some-file.csv"
+    args = ["-document_type", "text"]
 }
+
+
+/*
+ * For tests that reference test files in the test source tree, we need to tell Gradle to copy these to src/test/resources
+ * so that they can be found when running "gradle test".
+ */
+sourceSets.test.resources.srcDir 'src/test/java'
