@@ -1,6 +1,10 @@
 <package-database xmlns="http://marklogic.com/manage/package/databases">
   <config>
     <package-database-properties>
+    
+      <!--  Must be true for CPF to work -->
+      <maintain-last-modified>true</maintain-last-modified>
+      
       <range-element-indexes>
         <range-element-index>
           <scalar-type>dateTime</scalar-type>
