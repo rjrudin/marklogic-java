@@ -1,6 +1,12 @@
-/.gradle
+.gradle
 bin/
+
 .classpath
 .project
 
-gradle.properties
+.idea
+*.iws
+*.ipr
+*.iml
+
+local.properties
