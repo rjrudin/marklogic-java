@@ -10,3 +10,4 @@ bin/
 *.iml
 
 local.properties
+local.gradle
