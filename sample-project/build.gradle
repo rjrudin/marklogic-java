@@ -1,3 +1,16 @@
+/*
+ * This is an example of applying a non-version controlled Gradle file that a user may wish to create to override 
+ * properties defined in gradle.properties. Gradle does not provide an out-of-the-box mechanism for doing this, but the
+ * below technique will do the job. The local.gradle file can define an "ext" block to override properties, as well as
+ * including any other valid Gradle build scripting. 
+ */
+try {
+    apply from: "local.gradle"
+    println "Applied local.gradle file"
+} catch (Exception e) {
+    println "Couldn't find local.gradle; you can create this gitignore'd file to override properties if necessary"
+}
+
 /**
  * The buildscript block lets us tell Gradle about our dependency on ml-gradle and where to find its dependencies.
  */
@@ -22,25 +35,11 @@ buildscript {
 apply plugin: 'ml-gradle'
 
 
-
 //
 // To use ml-gradle, you only need what is above this line. Everything below this line is optional and is intended to
 // show different features provided by ml-gradle.
 //
 
-
-/*
- * This is an example of applying a non-version controlled Gradle file that a user may wish to create to override 
- * properties defined in gradle.properties. Gradle does not provide an out-of-the-box mechanism for doing this, but the
- * below technique will do the job. The local.gradle file can define an "ext" block to override properties, as well as
- * including any other valid Gradle build scripting. 
- */
-try {
-    apply from: "local.gradle"
-    println "Applied local.gradle file"
-} catch (Exception e) {
-    println "Couldn't find local.gradle; you can create this gitignore'd file to override properties if necessary"
-}
 
 /*
  * For generating IDE project files you might consider leveraging the Eclipse or IntelliJ IDEA plugin.
