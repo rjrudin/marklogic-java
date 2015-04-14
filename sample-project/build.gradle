@@ -21,7 +21,9 @@ buildscript {
         maven {url "http://rjrudin.github.io/marklogic-java/releases"}
     }
 
-    dependencies { classpath "com.marklogic:ml-gradle:1.1.2" }
+    dependencies { 
+        classpath "com.marklogic:ml-gradle:1.2.1"
+    }   
 }
 
 /*
@@ -33,7 +35,6 @@ buildscript {
  * installing your application. 
  */
 apply plugin: 'ml-gradle'
-
 
 //
 // To use ml-gradle, you only need what is above this line. Everything below this line is optional and is intended to
@@ -97,7 +98,6 @@ ext {
         databasePackageFilePaths = ["src/main/xqy/packages/content-database1.xml", "src/main/xqy/packages/content-database2.xml"]
         httpServerPackageFilePaths = ["src/main/xqy/packages/http-server.xml"]
     }
-
 }
 
 
@@ -263,3 +263,15 @@ task importViaContentPump(type: com.marklogic.gradle.task.MlcpTask) {
  * so that they can be found when running "gradle test".
  */
 sourceSets.test.resources.srcDir 'src/test/java'
+
+
+/*
+ * This is an example of configuring the instance of AppDeployer that ml-gradle uses. In this case, we're using a property reference
+ * to access the "servicesPath" of the ModulesFinder instance used by a ModulesLoader instance, which is used by the AppDeployer
+ * instance (these classes can be found in ml-app-deployer and ml-javaclient-util). This doesn't modify anything - the
+ * servicesPath defaults to "services" - it's just an example of how you can change the default paths. See DefaultModulesFinder
+ * in ml-javaclient-util for more information. 
+ */
+ext {
+    mlAppDeployer.modulesLoader.modulesFinder.servicesPath = "services"
+}
