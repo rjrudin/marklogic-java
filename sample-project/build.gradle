@@ -219,14 +219,10 @@ mlClearModules.excludes = ["/ext/rest-api/my-custom-rewriter.xqy"]
  * In order to use Content Pump, we need to tell Gradle where to find the Content Pump jar and its dependencies. To do
  * so, we create a new Gradle configuration named "mlcp" so we keep these dependencies separate from our application.
  * We then need to include an additional repository - the Cloudera repository - to resolve all the dependencies. 
- * Finally, the Content Pump POM has an issue (bug 31294) that requires us to tell Gradle not to pull in the dependencies
- * of commons-modeler, else the wrong version of xml-apis.jar is brought in, breaking Content Pump. Alas. So we add a 
- * dependency on Content Pump, but it's a little more complicated because of the commons-modeler exclusion.
  */
 configurations { mlcp }
 dependencies {
-    mlcp("com.marklogic:mlcp-Hadoop2:1.2-3") { exclude module:"commons-modeler" }
-    mlcp("commons-modeler:commons-modeler:2.0") { transitive = false }
+    mlcp "com.marklogic:mlcp-Hadoop2:1.3-2"
 }
 repositories { maven {url "http://repository.cloudera.com/artifactory/cloudera-repos/" } }
 
