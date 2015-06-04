@@ -19,10 +19,11 @@ buildscript {
         mavenCentral()
         maven {url "http://developer.marklogic.com/maven2/"}
         maven {url "http://rjrudin.github.io/marklogic-java/releases"}
+        maven {url "../../gh-pages-marklogic-java/releases"}
     }
 
     dependencies { 
-        classpath "com.marklogic:ml-gradle:1.2.1"
+        classpath "com.marklogic:ml-gradle:2.0-alpha-1"
     }   
 }
 
@@ -74,13 +75,13 @@ configurations { corb }
  * using that library in tests that must invoke MarkLogic HTTP endpoints.
  */
 dependencies {
-    compile "com.marklogic:ml-javaclient-util:1.0"
-    testCompile "com.marklogic:ml-junit:1.0"
+    compile "com.marklogic:ml-javaclient-util:2.0"
+    testCompile "com.marklogic:ml-junit:2.0"
     testCompile "com.jayway.restassured:rest-assured:2.3.1"
 
     // Located at https://github.com/rjrudin/marklogic-java/tree/gh-pages/releases/com/marklogic/corb
     corb "com.marklogic:corb:1.0"
-    corb "com.marklogic:marklogic-xcc:7.0.4"
+    corb "com.marklogic:marklogic-xcc:8.0-2"
 }
 
 
@@ -88,16 +89,6 @@ ext {
     // This property is used for grouping all the custom tasks in this file so that they appear together when "gradle tasks" is run.
     // This is optional, but it's usually a good practice to group your tasks together.
     taskGroup = "Sample project tasks"
-    
-    /*
-     * ml-gradle supports building database and HTTP server packages by merging one or more partial package files together.
-     * ml-gradle starts with a "plain vanilla" package with default settings and then merges in each of the package files
-     * that you specify.
-     */
-    mlAppConfig {
-        databasePackageFilePaths = ["src/main/xqy/packages/content-database1.xml", "src/main/xqy/packages/content-database2.xml"]
-        httpServerPackageFilePaths = ["src/main/xqy/packages/http-server.xml"]
-    }
 }
 
 
@@ -115,100 +106,10 @@ task runCorb(dependsOn: ['mlLoadModules'], type: JavaExec, group: taskGroup) {
 
 
 /*
- * This is an example of creating a user, including roles, default collections, and permissions. ml-gradle does not
- * yet support a way of creating users via an XML file, though that would be straightforward to add.
- */
-task createUser(type: com.marklogic.gradle.task.security.CreateUserTask, group: taskGroup) {
-    username = "sample-project-user"
-    userDescription = "Sample project user"
-    password = "password"
-    roleNames = ["alert-user", "rest-admin"]
-    collections = ["default-collection"]
-    permissionRoles = ["rest-reader", "rest-writer"]
-    permissionCapabilities = ["read", "update"]
-}
-
-
-/*
- * Users can be easily removed.
- */
-task removeUser(type: com.marklogic.gradle.task.security.RemoveUsersTask, group: taskGroup) { usernames = ["sample-project-user"] }
-
-
-/*
- * This is an example of creating a role. Similar to users, ml-gradle does not yet support creating roles via an XML
- * file, though that too would be straightforward to add.
- */
-task createRole(type: com.marklogic.gradle.task.security.CreateRoleTask, group: taskGroup) {
-    roleName = "sample-project-role"
-    roleDescription = "Sample project role role"
-    roleNames = ["rest-reader"]
-    permissionRoles = ["rest-reader", "rest-writer"]
-    permissionCapabilities = ["read", "update"]
-    collections = ["default-collection"]
-    executePrivilegeActions = ["xdmp:login", "xdmp:eval"]
-    uriPrivilegeActions = ["domain-uri", "pipeline-uri"]
-}
-
-
-/*
- * Roles can be easily removed too.
- */
-task removeRole(type: com.marklogic.gradle.task.security.RemoveRolesTask, group: taskGroup) { roles = ["sample-project-role"] }
-
-
-/*
- * An example of creating a CPF domain. pipelineNames defaults to "Status Change Handling" and "Alerting"; in this case,
- * we only want Status Change Handling. ml-gradle has a built-in task for inserting this pipeline, so this task depends
- * on that. 
- *
- * Note that in order for CPF to be installed, the application must have a triggers database. The presence of
- * src/main/xqy/packages/triggers-database.xml tells the mlInstallApp task (called by mlDeploy) to create a triggers
- * database. ml-gradle does not yet have support for a minimal/partial package file for a triggers database - you 
- * currently have to define a complete package file. 
- */
-task createSampleDomain(type: com.marklogic.gradle.task.cpf.CreateDomainTask, group: taskGroup, dependsOn: ["mlInsertSchPipeline"]) {
-    domainName = "sample-domain"
-    domainDescription = "Domain for sample-collection"
-    scope = "directory"
-    scopeUri = "/"
-    pipelineNames = ["Status Change Handling"]
-}
-
-
-/*
- * An example of creating a CPF domain configuration. This depends on the default domain existing, so this dependency
- * is expressed via the task. 
- */
-task createDomainConfiguration(type: com.marklogic.gradle.task.cpf.CreateDomainConfigurationTask, group: taskGroup, dependsOn: ["createSampleDomain"]) {
-    restartUser = mlAppConfig.username
-    defaultDomainName = "sample-domain"
-}
-
-
-/*
- * An example of inserting a custom CPF pipeline. Multiple paths and multiple domain names can be included; each pipeline
- * will be attached to each domain name.
- */
-task insertSamplePipeline(type: com.marklogic.gradle.task.cpf.InsertPipelinesTask, group: taskGroup, dependsOn: ["createDomainConfiguration"]) {
-    filePaths = ["src/main/xqy/cpf/sample-pipeline.xml"]
-    domainNames = ["sample-domain"]
-}
-
-
-/*
- * This is an example of defining dependencies on the ml-gradle built-in mlPostDeploy task. mlPostDeploy is invoked as
- * the last step of mlDeploy. It doesn't do anything by default. It exists so that a project can easily add tasks to the
- * end of mlDeploy via the dependsOn attribute of mlPostDeploy.
- */
-mlPostDeploy.dependsOn mlUpdateHttpServers, insertSamplePipeline
-
-
-/*
  * When mlClearModules clears the content database, it will exclude any URIs defined by its "excludes" attribute. The
  * URI below doesn't exist, this is just an example of how to use this feature.
  */
-mlClearModules.excludes = ["/ext/rest-api/my-custom-rewriter.xqy"]
+//mlClearModules.excludes = ["/ext/rest-api/my-custom-rewriter.xqy"]
 
 
 /*
@@ -226,14 +127,14 @@ dependencies {
 }
 repositories { maven {url "http://repository.cloudera.com/artifactory/cloudera-repos/" } }
 
-mlLoadAssetsViaMlcp.classpath = configurations.mlcp
-mlLoadModules.dependsOn mlLoadAssetsViaMlcp
+//mlLoadAssetsViaMlcp.classpath = configurations.mlcp
+//mlLoadModules.dependsOn mlLoadAssetsViaMlcp
 
 /*
  * By default, extensions of MlcpTask will use mlAppConfig.xdbcPort, but that puts modules into the content database. We
  * instead want to use modulesXdbcPort, which will put modules in the modules database.
  */
-mlLoadAssetsViaMlcp.port = mlAppConfig.modulesXdbcPort
+//mlLoadAssetsViaMlcp.port = mlAppConfig.modulesXdbcPort
 
 
 /*
@@ -268,6 +169,6 @@ sourceSets.test.resources.srcDir 'src/test/java'
  * servicesPath defaults to "services" - it's just an example of how you can change the default paths. See DefaultModulesFinder
  * in ml-javaclient-util for more information. 
  */
-ext {
-    mlAppDeployer.modulesLoader.modulesFinder.servicesPath = "services"
-}
+//ext {
+//    mlAppDeployer.modulesLoader.modulesFinder.servicesPath = "services"
+//}
