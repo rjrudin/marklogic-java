@@ -19,3 +19,26 @@ apply plugin: 'ml-gradle'
 // For generating IDE project files you might consider leveraging the Eclipse or IntelliJ IDEA plugin.
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+/*
+ * This lists the repositories for finding project dependencies (which differ from buildscript dependencies - buildscript
+ * dependencies are not included in project artifacts that are built). These repositories are needed to satisfy the
+ * dependencies expressed below.
+ */
+repositories {
+    mavenCentral()
+    maven {url "http://developer.marklogic.com/maven2/"}
+    maven {url "http://rjrudin.github.io/marklogic-java/releases"}
+}
+
+/*
+ * This expresses dependencies on the ml-java and ml-junit libraries. The former is typically used for application
+ * code, and the latter supports writing JUnit-based tests. A dependency exists on RestAssured to show an option for
+ * using that library in tests that must invoke MarkLogic HTTP endpoints.
+ */
+dependencies {
+    compile "com.marklogic:ml-javaclient-util:2.0"
+    testCompile "com.marklogic:ml-junit:2.0"
+    testCompile "com.jayway.restassured:rest-assured:2.3.1"
+}
