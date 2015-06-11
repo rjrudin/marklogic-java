@@ -28,6 +28,7 @@ apply plugin: 'idea'
  */
 repositories {
     mavenCentral()
+    maven {url "file:../../gh-pages-marklogic-java/releases"}
     maven {url "http://developer.marklogic.com/maven2/"}
     maven {url "http://rjrudin.github.io/marklogic-java/releases"}
 }
@@ -38,7 +39,12 @@ repositories {
  * using that library in tests that must invoke MarkLogic HTTP endpoints.
  */
 dependencies {
-    compile "com.marklogic:ml-javaclient-util:2.0"
-    testCompile "com.marklogic:ml-junit:2.0"
+    compile "com.marklogic:ml-javaclient-util:2.0.1"
+    testCompile "com.marklogic:ml-junit:2.0.1"
     testCompile "com.jayway.restassured:rest-assured:2.3.1"
 }
+
+/*
+ * Example of a custom command and how it's added to the AppDeployer. This could also be defined in the Gradle buildSrc
+ * directory (that's more likely the better option for keeping your build.gradle file slim)
+ */
