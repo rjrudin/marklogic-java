@@ -1,3 +1,5 @@
+import com.marklogic.appdeployer.command.CommandContext;
+
 buildscript {
     repositories {
         mavenCentral()
@@ -48,3 +50,30 @@ dependencies {
  * Example of a custom command and how it's added to the AppDeployer. This could also be defined in the Gradle buildSrc
  * directory (that's more likely the better option for keeping your build.gradle file slim)
  */
+ext {
+    mlAppDeployer.commands.add(new MergeContentDatabaseCommand())
+}
+
+import com.marklogic.appdeployer.command.*;
+
+class MergeContentDatabaseCommand extends AbstractCommand {
+
+    public Integer getExecuteSortOrder() {
+        return 1000;
+    }
+    
+    public void execute(CommandContext context) {
+        def contentDatabaseName = context.getAppConfig().getContentDatabaseName()
+        println "Merging content database"
+        context.getManageClient().postJson("/manage/v2/databases/" + contentDatabaseName, '{"operation":"merge-database"}')
+    }
+}
+
+/*
+ * Example of doing a database merge, but not as part of the deployment process.
+ */
+task mergeContentDatabase(type: com.marklogic.gradle.task.MarkLogicTask) {
+    doLast {
+        getManageClient().postJson("/manage/v2/databases/" + getAppConfig().getContentDatabaseName(), '{"operation":"merge-database"}')
+    }
+}
