@@ -1,5 +1,3 @@
-import com.marklogic.appdeployer.command.CommandContext;
-
 buildscript {
     repositories {
         mavenCentral()
@@ -8,7 +6,7 @@ buildscript {
         maven {url "../../gh-pages-marklogic-java/releases"}
     }
 
-    dependencies {  classpath "com.marklogic:ml-gradle:2.0-alpha-1" }
+    dependencies {  classpath "com.marklogic:ml-gradle:2.0-alpha-2" }
 }
 
 apply plugin: 'ml-gradle'
@@ -54,7 +52,7 @@ ext {
     mlAppDeployer.commands.add(new MergeContentDatabaseCommand())
 }
 
-import com.marklogic.appdeployer.command.*;
+import com.marklogic.appdeployer.command.*
 
 class MergeContentDatabaseCommand extends AbstractCommand {
 
