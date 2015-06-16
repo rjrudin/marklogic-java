@@ -67,6 +67,12 @@ task runCorb(dependsOn: ['mlLoadModules'], type: JavaExec) {
 }
 
 /*
+ * For tests that reference test files in the test source tree, we need to tell Gradle to copy these to src/test/resources
+ * so that they can be found when running "gradle test".
+ */
+sourceSets.test.resources.srcDir 'src/test/java'
+
+/*
  * Example of a custom command and how it's added to the AppDeployer. This could also be defined in the Gradle buildSrc
  * directory (that's more likely the better option for keeping your build.gradle file slim)
  */
