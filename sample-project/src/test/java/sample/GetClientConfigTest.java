@@ -14,7 +14,7 @@ public class GetClientConfigTest extends AbstractSampleProjectTest {
     public void testConfig() {
         DatabaseClientConfig config = getApplicationContext().getBean(DatabaseClientConfig.class);
         assertEquals("localhost", config.getHost());
-        assertEquals(8100, config.getPort());
+        assertEquals(8101, config.getPort());
     }
 
 }

@@ -34,14 +34,36 @@ repositories {
 }
 
 /*
+ * This custom Gradle configuration allows us to specify the classpath for running Corb jobs. This is only needed if 
+ * you want to run Corb jobs via Gradle tasks. More info on Corb can be found at - http://developer.marklogic.com/code/corb.
+ */
+configurations { corb }
+
+/*
  * This expresses dependencies on the ml-java and ml-junit libraries. The former is typically used for application
  * code, and the latter supports writing JUnit-based tests. A dependency exists on RestAssured to show an option for
  * using that library in tests that must invoke MarkLogic HTTP endpoints.
  */
 dependencies {
-    compile "com.marklogic:ml-javaclient-util:2.0.1"
+    compile "com.marklogic:ml-javaclient-util:2.0.2"
     testCompile "com.marklogic:ml-junit:2.0.1"
     testCompile "com.jayway.restassured:rest-assured:2.3.1"
+
+    // Located at https://github.com/rjrudin/marklogic-java/tree/gh-pages/releases/com/marklogic/corb
+    corb "com.marklogic:corb:1.0"
+    corb "com.marklogic:marklogic-xcc:8.0.2"
+}
+
+/*
+ * This is an example of both a custom Gradle task and an easy way of invoking Corb. This depends on "mlLoadModules" to
+ * ensure that the Corb uris/transform modules are loaded. It also uses as a classpath the custom configuration named
+ * "corb" that we defined earlier. Note that sample uris.xqy and transform.xqy modules just print a log statement for
+ * each document in your content database, so unless there are documents, you won't see any result from this.
+ */
+task runCorb(dependsOn: ['mlLoadModules'], type: JavaExec) {
+    main = 'com.marklogic.developer.corb.Manager'
+    classpath = configurations.corb
+    args = [mlAppConfig.contentXccUrl, '""', 'transform.xqy', '4', 'uris.xqy', '/ext/corb/', 'sample-project-modules', 'false']
 }
 
 /*
