@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.rjrudin</groupId>
+  <artifactId>ml-gradle-all</artifactId>
+  <version>2.01b</version>
+  <versioning>
+    <versions>
+      <version>2.01b</version>
+    </versions>
+    <lastUpdated>20150810123648</lastUpdated>
+  </versioning>
+</metadata>
