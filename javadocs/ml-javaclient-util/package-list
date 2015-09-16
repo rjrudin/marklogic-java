@@ -1,0 +1,6 @@
+com.rjrudin.marklogic.client
+com.rjrudin.marklogic.client.spring
+com.rjrudin.marklogic.modulesloader
+com.rjrudin.marklogic.modulesloader.impl
+com.rjrudin.marklogic.modulesloader.ssl
+com.rjrudin.marklogic.modulesloader.xcc
