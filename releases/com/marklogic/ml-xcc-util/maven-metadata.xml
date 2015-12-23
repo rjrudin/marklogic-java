@@ -2,14 +2,15 @@
 <metadata>
   <groupId>com.marklogic</groupId>
   <artifactId>ml-xcc-util</artifactId>
-  <version>1.0</version>
   <versioning>
+    <release>2.2</release>
     <versions>
       <version>1.0</version>
       <version>2.0</version>
       <version>2.0.1</version>
       <version>2.1</version>
+      <version>2.2</version>
     </versions>
-    <lastUpdated>20150808192242</lastUpdated>
+    <lastUpdated>20151223142125</lastUpdated>
   </versioning>
 </metadata>
